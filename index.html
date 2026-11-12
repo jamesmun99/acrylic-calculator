@@ -49,7 +49,41 @@
             margin-bottom: 6px;
         }
 
-        input, select {
+        /* 라디오 버튼 그룹 스타일 */
+        .radio-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .radio-label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #374151;
+            background-color: #ffffff;
+            transition: all 0.2s;
+        }
+
+        .radio-label input {
+            margin-right: 6px;
+            accent-color: #2563eb;
+        }
+
+        .radio-label:has(input:checked) {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        input[type="number"], select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #d1d5db;
@@ -60,7 +94,7 @@
             transition: border-color 0.2s;
         }
 
-        input:focus, select:focus {
+        input[type="number"]:focus {
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
@@ -107,11 +141,15 @@
     <h2>맞춤 제작 단가 계산기</h2>
     
     <div class="input-group">
-        <label for="material">재질 선택</label>
-        <select id="material" onchange="calculate()">
-            <option value="15000">아크릴</option>
-            <option value="16000">PC (폴리카보네이트)</option>
-        </select>
+        <label>재질 선택</label>
+        <div class="radio-group">
+            <label class="radio-label">
+                <input type="radio" name="material" value="15000" checked onchange="calculate()"> 아크릴
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="material" value="20000" onchange="calculate()"> PC (폴리카보네이트)
+            </label>
+        </div>
     </div>
 
     <div class="input-group">
@@ -161,7 +199,10 @@
     }
 
     function calculate() {
-        const materialRate = parseFloat(document.getElementById('material').value) || 15000;
+        // 선택된 라디오 버튼의 값 가져오기 (아크릴: 15000, PC: 20000)
+        const selectedMaterial = document.querySelector('input[name="material"]:checked');
+        const materialRate = selectedMaterial ? parseFloat(selectedMaterial.value) : 15000;
+
         const width = parseFloat(document.getElementById('width').value) || 0;
         const height = parseFloat(document.getElementById('height').value) || 0;
         const thickness = parseFloat(document.getElementById('thickness').value) || 0;
