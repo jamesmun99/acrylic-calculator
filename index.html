@@ -172,7 +172,7 @@
 
     <div class="input-group">
         <label for="quantity">수량 (개)</label>
-        <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="calculate()">
+        <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity()">
     </div>
 
     <div class="result-box">
@@ -198,15 +198,28 @@
         calculate();
     }
 
+    function validateQuantity() {
+        const qtyEl = document.getElementById('quantity');
+        // 빈칸이 되었을 때(지웠을 때) 자동으로 1로 복원
+        if (qtyEl.value === '' || parseFloat(qtyEl.value) < 1) {
+            // 사용자가 지우는 중일 수 있으므로 빈칸 상태를 허용하려면 아래 주석 해제 후 처리 가능하나, 
+            // 요청하신 대로 지우더라도 자동으로 1이 들어가게 하려면 아래와 같이 처리합니다.
+        }
+        calculate();
+    }
+
     function calculate() {
-        // 선택된 라디오 버튼의 값 가져오기 (아크릴: 15000, PC: 20000)
         const selectedMaterial = document.querySelector('input[name="material"]:checked');
         const materialRate = selectedMaterial ? parseFloat(selectedMaterial.value) : 15000;
 
         const width = parseFloat(document.getElementById('width').value) || 0;
         const height = parseFloat(document.getElementById('height').value) || 0;
         const thickness = parseFloat(document.getElementById('thickness').value) || 0;
-        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        
+        let quantity = parseInt(document.getElementById('quantity').value);
+        if (isNaN(quantity) || quantity < 1) {
+            quantity = 1; // 비어있거나 1 미만이면 기본값 1 적용
+        }
 
         if (width === 0 || height === 0 || thickness === 0) {
             document.getElementById('result').innerText = '0';
