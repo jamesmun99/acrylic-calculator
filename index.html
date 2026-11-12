@@ -65,6 +65,14 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
+        .error-msg {
+            display: none;
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
         .result-box {
             margin-top: 24px;
             padding: 16px;
@@ -107,18 +115,21 @@
     </div>
 
     <div class="input-group">
-        <label for="width">가로 (mm)</label>
-        <input type="number" id="width" placeholder="가로 입력 (mm)" oninput="calculate()">
+        <label for="width">가로 (mm) - 최대 1,500mm</label>
+        <input type="number" id="width" max="1500" placeholder="가로 입력 (최대 1500)" oninput="validateAndCalculate('width', 'widthError', 1500)">
+        <div class="error-msg" id="widthError">⚠️ 최대 입력 가능 길이는 1,500mm입니다.</div>
     </div>
 
     <div class="input-group">
-        <label for="height">세로 (mm)</label>
-        <input type="number" id="height" placeholder="세로 입력 (mm)" oninput="calculate()">
+        <label for="height">세로 (mm) - 최대 1,500mm</label>
+        <input type="number" id="height" max="1500" placeholder="세로 입력 (최대 1500)" oninput="validateAndCalculate('height', 'heightError', 1500)">
+        <div class="error-msg" id="heightError">⚠️ 최대 입력 가능 길이는 1,500mm입니다.</div>
     </div>
 
     <div class="input-group">
-        <label for="thickness">두께 (mm)</label>
-        <input type="number" id="thickness" placeholder="두께 입력 (mm)" oninput="calculate()">
+        <label for="thickness">두께 (mm) - 최대 10mm</label>
+        <input type="number" id="thickness" max="10" placeholder="두께 입력 (최대 10)" oninput="validateAndCalculate('thickness', 'thicknessError', 10)">
+        <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
     </div>
 
     <div class="input-group">
@@ -134,6 +145,21 @@
 </div>
 
 <script>
+    function validateAndCalculate(inputId, errorId, maxLimit) {
+        const inputEl = document.getElementById(inputId);
+        const errorEl = document.getElementById(errorId);
+        const val = parseFloat(inputEl.value);
+
+        if (val > maxLimit) {
+            inputEl.value = maxLimit;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
+        }
+
+        calculate();
+    }
+
     function calculate() {
         const materialRate = parseFloat(document.getElementById('material').value) || 15000;
         const width = parseFloat(document.getElementById('width').value) || 0;
