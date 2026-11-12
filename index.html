@@ -3,205 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>단가 및 수량 계산기</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts Inter & Pretendard -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <title>단가 계산기 (아크릴 / PC)</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
         body {
-            font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .calculator-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: #111827;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            color: #0369a1;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0c4a6e;
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white text-center">
-            <h1 class="text-xl font-bold tracking-tight">단가 및 수량 계산기</h1>
-            <p class="text-blue-100 text-xs mt-1">치수와 수량을 입력하시면 총금액이 자동으로 계산됩니다.</p>
-        </div>
-
-        <!-- Form Section -->
-        <div class="p-6 space-y-4">
-            <!-- 가로 -->
-            <div>
-                <label for="width" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    가로 (mm)
-                </label>
-                <div class="relative">
-                    <input type="text" id="width" placeholder="0" 
-                           class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium text-slate-800"
-                           oninput="onInputChange(this)">
-                </div>
-            </div>
-
-            <!-- 세로 -->
-            <div>
-                <label for="height" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    세로 (mm)
-                </label>
-                <div class="relative">
-                    <input type="text" id="height" placeholder="0" 
-                           class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium text-slate-800"
-                           oninput="onInputChange(this)">
-                </div>
-            </div>
-
-            <!-- 두께 -->
-            <div>
-                <label for="thickness" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    두께 (mm)
-                </label>
-                <div class="relative">
-                    <input type="text" id="thickness" placeholder="0" 
-                           class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium text-slate-800"
-                           oninput="onInputChange(this)">
-                </div>
-            </div>
-
-            <!-- 수량 -->
-            <div>
-                <label for="quantity" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    수량 (개)
-                </label>
-                <div class="flex items-center space-x-2">
-                    <button type="button" onclick="adjustQuantity(-1)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition-colors">
-                        -
-                    </button>
-                    <input type="text" id="quantity" value="1" 
-                           class="w-full px-4 py-2.5 text-center bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-bold text-slate-800"
-                           oninput="onInputChange(this)">
-                    <button type="button" onclick="adjustQuantity(1)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition-colors">
-                        +
-                    </button>
-                </div>
-            </div>
-
-            <!-- 초기화 버튼 -->
-            <button type="button" onclick="resetForm()" class="w-full py-2 text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors text-center">
-                입력값 초기화
-            </button>
-
-            <!-- Results Card -->
-            <div class="mt-6 bg-slate-50 border border-slate-200/80 rounded-xl p-5 space-y-3">
-                <div class="flex justify-between items-center text-sm">
-                    <span class="text-slate-500 font-medium">개당 단가</span>
-                    <span class="font-semibold text-slate-700" id="unitPrice">0 원</span>
-                </div>
-                <div class="flex justify-between items-center text-sm">
-                    <span class="text-slate-500 font-medium">선택 수량</span>
-                    <span class="font-semibold text-slate-700" id="selectedQty">1 개</span>
-                </div>
-                <hr class="border-slate-200">
-                <div class="flex justify-between items-center pt-1">
-                    <span class="text-base font-bold text-slate-800">최종 합계 금액</span>
-                    <span class="text-2xl font-extrabold text-blue-600" id="totalPrice">0 원</span>
-                </div>
-            </div>
-        </div>
+<div class="calculator-card">
+    <h2>맞춤 제작 단가 계산기</h2>
+    
+    <div class="input-group">
+        <label for="material">재질 선택</label>
+        <select id="material" onchange="calculate()">
+            <option value="15000">아크릴</option>
+            <option value="20000">PC (폴리카보네이트)</option>
+        </select>
     </div>
 
-    <script>
-        // 숫자 콤마 포맷팅 함수
-        function formatNumberWithCommas(val) {
-            if (val === null || val === undefined || isNaN(val)) return '0';
-            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    <div class="input-group">
+        <label for="width">가로 (mm)</label>
+        <input type="number" id="width" placeholder="가로 입력 (mm)" oninput="calculate()">
+    </div>
+
+    <div class="input-group">
+        <label for="height">세로 (mm)</label>
+        <input type="number" id="height" placeholder="세로 입력 (mm)" oninput="calculate()">
+    </div>
+
+    <div class="input-group">
+        <label for="thickness">두께 (mm)</label>
+        <input type="number" id="thickness" placeholder="두께 입력 (mm)" oninput="calculate()">
+    </div>
+
+    <div class="result-box">
+        <div class="result-label">계산 결과</div>
+        <div class="result-value"><span id="result">0</span> 원</div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const materialRate = parseFloat(document.getElementById('material').value) || 15000;
+        const width = parseFloat(document.getElementById('width').value) || 0;
+        const height = parseFloat(document.getElementById('height').value) || 0;
+        const thickness = parseFloat(document.getElementById('thickness').value) || 0;
+
+        if (width === 0 || height === 0 || thickness === 0) {
+            document.getElementById('result').innerText = '0';
+            return;
         }
 
-        // 입력 문자열에서 숫자 및 소수점만 추출
-        function parseFormattedValue(valueStr) {
-            if (!valueStr) return 0;
-            const cleaned = valueStr.toString().replace(/[^0-9.]/g, '');
-            return parseFloat(cleaned) || 0;
-        }
+        // 수식: MAX(1000, CEILING(((가로*세로*두께*1.19)/1000000 * 재질단가 + 500), 200))
+        // 아크릴: 15000, PC: 20000
+        const rawValue = ((width * height * thickness * 1.19) / 1000000 * materialRate) + 500;
 
-        // 입력 이벤트 핸들러 (천단위 콤마 실시간 유지)
-        function onInputChange(inputElement) {
-            let cursorPosition = inputElement.selectionStart;
-            let originalLength = inputElement.value.length;
-            
-            // 소수점 1개 허용 처리
-            let rawValue = inputElement.value.replace(/[^0-9.]/g, '');
-            const parts = rawValue.split('.');
-            if (parts.length > 2) {
-                rawValue = parts[0] + '.' + parts.slice(1).join('');
-            }
+        // 200 단위 올림
+        const ceilingValue = Math.ceil(rawValue / 200) * 200;
 
-            if (rawValue !== '') {
-                if (parts.length === 2) {
-                    const integerPart = formatNumberWithCommas(parts[0]);
-                    inputElement.value = integerPart + '.' + parts[1];
-                } else {
-                    inputElement.value = formatNumberWithCommas(rawValue);
-                }
-            } else {
-                inputElement.value = '';
-            }
+        // 최소 1000원 보장
+        const finalResult = Math.max(1000, ceilingValue);
 
-            // 커서 위치 보정
-            let newLength = inputElement.value.length;
-            cursorPosition += (newLength - originalLength);
-            try {
-                inputElement.setSelectionRange(cursorPosition, cursorPosition);
-            } catch (e) {
-                // 수량 증가 버튼 등에서는 구형 브라우저 대응
-            }
+        document.getElementById('result').innerText = finalResult.toLocaleString();
+    }
+</script>
 
-            calculate();
-        }
-
-        // 수량 증감 버튼
-        function adjustQuantity(delta) {
-            const qtyInput = document.getElementById('quantity');
-            let currentQty = Math.floor(parseFormattedValue(qtyInput.value));
-            currentQty = Math.max(1, currentQty + delta);
-            qtyInput.value = formatNumberWithCommas(currentQty);
-            calculate();
-        }
-
-        // 입력 폼 초기화
-        function resetForm() {
-            document.getElementById('width').value = '';
-            document.getElementById('height').value = '';
-            document.getElementById('thickness').value = '';
-            document.getElementById('quantity').value = '1';
-            calculate();
-        }
-
-        // 계산 핵심 로직
-        function calculate() {
-            const width = parseFormattedValue(document.getElementById('width').value);
-            const height = parseFormattedValue(document.getElementById('height').value);
-            const thickness = parseFormattedValue(document.getElementById('thickness').value);
-            const quantity = Math.max(1, Math.floor(parseFormattedValue(document.getElementById('quantity').value)));
-
-            // 세 가지 입력값 중 하나라도 없거나 0이면 단가는 0으로 표기
-            if (width <= 0 || height <= 0 || thickness <= 0) {
-                document.getElementById('unitPrice').innerText = '0 원';
-                document.getElementById('selectedQty').innerText = `${formatNumberWithCommas(quantity)} 개`;
-                document.getElementById('totalPrice').innerText = '0 원';
-                return;
-            }
-
-            // 엑셀 수식: ((가로*세로*두께*1.19)/1000000*13000+500)
-            const rawValue = ((width * height * thickness * 1.19) / 1000000 * 13000) + 500;
-
-            // CEILING(..., 200) 구현 (200 단위 올림)
-            const ceilingValue = Math.ceil(rawValue / 200) * 200;
-
-            // MAX(1000, ...) 구현 (최소 1000 보장)
-            const unitPrice = Math.max(1000, ceilingValue);
-
-            // 총 금액 = 단가 * 수량
-            const totalPrice = unitPrice * quantity;
-
-            // DOM 반영
-            document.getElementById('unitPrice').innerText = `${formatNumberWithCommas(unitPrice)} 원`;
-            document.getElementById('selectedQty').innerText = `${formatNumberWithCommas(quantity)} 개`;
-            document.getElementById('totalPrice').innerText = `${formatNumberWithCommas(totalPrice)} 원`;
-        }
-    </script>
 </body>
 </html>
