@@ -10,6 +10,13 @@
             margin: 0;
             padding: 0;
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        input {
+            -webkit-user-select: text;
+            user-select: text;
         }
 
         body {
@@ -49,7 +56,6 @@
             margin-bottom: 6px;
         }
 
-        /* 라디오 버튼 그룹 스타일 */
         .radio-group {
             display: flex;
             gap: 12px;
@@ -83,7 +89,7 @@
             font-weight: 600;
         }
 
-        input[type="number"], select {
+        input[type="number"] {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #d1d5db;
@@ -135,7 +141,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
 <div class="calculator-card">
     <h2>맞춤 제작 단가 계산기</h2>
@@ -154,25 +160,25 @@
 
     <div class="input-group">
         <label for="width">가로 (mm) - 최대 1,500mm</label>
-        <input type="number" id="width" max="1500" placeholder="가로 입력 (최대 1500)" oninput="validateAndCalculate('width', 'widthError', 1500)">
+        <input type="number" id="width" max="1500" placeholder="가로 입력 (최대 1500)" oninput="validateAndCalculate('width', 'widthError', 1500)" onkeydown="blurOnEnter(event)">
         <div class="error-msg" id="widthError">⚠️ 최대 입력 가능 길이는 1,500mm입니다.</div>
     </div>
 
     <div class="input-group">
         <label for="height">세로 (mm) - 최대 1,500mm</label>
-        <input type="number" id="height" max="1500" placeholder="세로 입력 (최대 1500)" oninput="validateAndCalculate('height', 'heightError', 1500)">
+        <input type="number" id="height" max="1500" placeholder="세로 입력 (최대 1500)" oninput="validateAndCalculate('height', 'heightError', 1500)" onkeydown="blurOnEnter(event)">
         <div class="error-msg" id="heightError">⚠️ 최대 입력 가능 길이는 1,500mm입니다.</div>
     </div>
 
     <div class="input-group">
         <label for="thickness">두께 (mm) - 최대 10mm</label>
-        <input type="number" id="thickness" max="10" placeholder="두께 입력 (최대 10)" oninput="validateAndCalculate('thickness', 'thicknessError', 10)">
+        <input type="number" id="thickness" max="10" placeholder="두께 입력 (최대 10)" oninput="validateAndCalculate('thickness', 'thicknessError', 10)" onkeydown="blurOnEnter(event)">
         <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
     </div>
 
     <div class="input-group">
         <label for="quantity">수량 (개)</label>
-        <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity()">
+        <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity(false)" onblur="validateQuantity(true)" onkeydown="blurOnEnter(event)">
     </div>
 
     <div class="result-box">
@@ -183,6 +189,33 @@
 </div>
 
 <script>
+    // 엔터키 입력 시 커서 빠져나오기
+    function blurOnEnter(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.target.blur();
+        }
+    }
+
+    // 개발자 도구 및 소스 보기 단축키 차단
+    document.addEventListener('keydown', function(e) {
+        // F12 차단
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (개발자 도구) 차단
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+            return false;
+        }
+        // Ctrl+U (소스 보기), Ctrl+S (페이지 저장) 차단
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
     function validateAndCalculate(inputId, errorId, maxLimit) {
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
@@ -198,12 +231,10 @@
         calculate();
     }
 
-    function validateQuantity() {
+    function validateQuantity(isBlur) {
         const qtyEl = document.getElementById('quantity');
-        // 빈칸이 되었을 때(지웠을 때) 자동으로 1로 복원
-        if (qtyEl.value === '' || parseFloat(qtyEl.value) < 1) {
-            // 사용자가 지우는 중일 수 있으므로 빈칸 상태를 허용하려면 아래 주석 해제 후 처리 가능하나, 
-            // 요청하신 대로 지우더라도 자동으로 1이 들어가게 하려면 아래와 같이 처리합니다.
+        if (isBlur && (qtyEl.value === '' || parseInt(qtyEl.value) < 1)) {
+            qtyEl.value = 1;
         }
         calculate();
     }
@@ -218,7 +249,7 @@
         
         let quantity = parseInt(document.getElementById('quantity').value);
         if (isNaN(quantity) || quantity < 1) {
-            quantity = 1; // 비어있거나 1 미만이면 기본값 1 적용
+            quantity = 1;
         }
 
         if (width === 0 || height === 0 || thickness === 0) {
@@ -227,12 +258,10 @@
             return;
         }
 
-        // 개당 단가 수식: MAX(1000, CEILING(((가로*세로*두께*1.19)/1000000 * 재질단가 + 500), 200))
         const rawValue = ((width * height * thickness * 1.19) / 1000000 * materialRate) + 500;
         const ceilingValue = Math.ceil(rawValue / 200) * 200;
         const unitPrice = Math.max(1000, ceilingValue);
 
-        // 총 금액 = 개당 단가 × 수량
         const totalPrice = unitPrice * quantity;
 
         document.getElementById('result').innerText = totalPrice.toLocaleString();
