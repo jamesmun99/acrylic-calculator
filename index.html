@@ -159,20 +159,20 @@
     </div>
 
     <div class="input-group">
-        <label for="width">가로 (mm) - 최대 1,500mm</label>
-        <input type="number" id="width" max="1500" placeholder="가로 입력 (최대 1500)" oninput="validateAndCalculate('width', 'widthError', 1500)" onkeydown="blurOnEnter(event)">
-        <div class="error-msg" id="widthError">⚠️ 최대 입력 가능 길이는 1,500mm입니다.</div>
+        <label for="width">가로 (mm) - 60mm ~ 1,500mm</label>
+        <input type="number" id="width" min="60" max="1500" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onkeydown="blurOnEnter(event)">
+        <div class="error-msg" id="widthError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
     </div>
 
     <div class="input-group">
-        <label for="height">세로 (mm) - 최대 1,500mm</label>
-        <input type="number" id="height" max="1500" placeholder="세로 입력 (최대 1500)" oninput="validateAndCalculate('height', 'heightError', 1500)" onkeydown="blurOnEnter(event)">
-        <div class="error-msg" id="heightError">⚠️ 최대 입력 가능 길이는 1,500mm입니다.</div>
+        <label for="height">세로 (mm) - 60mm ~ 1,500mm</label>
+        <input type="number" id="height" min="60" max="1500" placeholder="세로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onkeydown="blurOnEnter(event)">
+        <div class="error-msg" id="heightError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
     </div>
 
     <div class="input-group">
         <label for="thickness">두께 (mm) - 최대 10mm</label>
-        <input type="number" id="thickness" max="10" placeholder="두께 입력 (최대 10)" oninput="validateAndCalculate('thickness', 'thicknessError', 10)" onkeydown="blurOnEnter(event)">
+        <input type="number" id="thickness" max="10" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
         <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
     </div>
 
@@ -189,7 +189,6 @@
 </div>
 
 <script>
-    // 엔터키 입력 시 커서 빠져나오기
     function blurOnEnter(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -197,32 +196,64 @@
         }
     }
 
-    // 개발자 도구 및 소스 보기 단축키 차단
     document.addEventListener('keydown', function(e) {
-        // F12 차단
         if (e.key === 'F12' || e.keyCode === 123) {
             e.preventDefault();
             return false;
         }
-        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (개발자 도구) 차단
         if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
             e.preventDefault();
             return false;
         }
-        // Ctrl+U (소스 보기), Ctrl+S (페이지 저장) 차단
         if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's')) {
             e.preventDefault();
             return false;
         }
     });
 
-    function validateAndCalculate(inputId, errorId, maxLimit) {
+    // 가로/세로 범위 검증 (최소 60, 최대 1500)
+    function validateAndCalculate(inputId, errorId, minLimit, maxLimit) {
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
+        
+        if (inputEl.value === "") {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
+        }
+
         const val = parseFloat(inputEl.value);
 
-        if (val > maxLimit) {
+        if (val < minLimit) {
+            inputEl.value = minLimit;
+            errorEl.innerText = `⚠️ 최소 입력 가능 길이는 ${minLimit}mm입니다.`;
+            errorEl.style.display = 'block';
+        } else if (val > maxLimit) {
             inputEl.value = maxLimit;
+            errorEl.innerText = `⚠️ 최대 입력 가능 길이는 ${maxLimit.toLocaleString()}mm입니다.`;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
+        }
+
+        calculate();
+    }
+
+    // 두께 검증 (최대 10)
+    function validateThickness() {
+        const inputEl = document.getElementById('thickness');
+        const errorEl = document.getElementById('thicknessError');
+
+        if (inputEl.value === "") {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
+        }
+
+        const val = parseFloat(inputEl.value);
+
+        if (val > 10) {
+            inputEl.value = 10;
             errorEl.style.display = 'block';
         } else {
             errorEl.style.display = 'none';
