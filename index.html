@@ -160,19 +160,19 @@
 
     <div class="input-group">
         <label for="width">가로 (mm) - 60mm ~ 1,500mm</label>
-        <input type="number" id="width" min="60" max="1500" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onkeydown="blurOnEnter(event)">
+        <input type="number" id="width" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onblur="checkMinLimit('width', 'widthError', 60)" onkeydown="blurOnEnter(event)">
         <div class="error-msg" id="widthError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
     </div>
 
     <div class="input-group">
         <label for="height">세로 (mm) - 60mm ~ 1,500mm</label>
-        <input type="number" id="height" min="60" max="1500" placeholder="세로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onkeydown="blurOnEnter(event)">
+        <input type="number" id="height" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
         <div class="error-msg" id="heightError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
     </div>
 
     <div class="input-group">
         <label for="thickness">두께 (mm) - 최대 10mm</label>
-        <input type="number" id="thickness" max="10" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
+        <input type="number" id="thickness" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
         <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
     </div>
 
@@ -211,7 +211,7 @@
         }
     });
 
-    // 가로/세로 범위 검증 (최소 60, 최대 1500)
+    // 입력 중에는 자유롭게 타이핑하게 두되, 1500 초과만 즉시 제한
     function validateAndCalculate(inputId, errorId, minLimit, maxLimit) {
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
@@ -224,11 +224,7 @@
 
         const val = parseFloat(inputEl.value);
 
-        if (val < minLimit) {
-            inputEl.value = minLimit;
-            errorEl.innerText = `⚠️ 최소 입력 가능 길이는 ${minLimit}mm입니다.`;
-            errorEl.style.display = 'block';
-        } else if (val > maxLimit) {
+        if (val > maxLimit) {
             inputEl.value = maxLimit;
             errorEl.innerText = `⚠️ 최대 입력 가능 길이는 ${maxLimit.toLocaleString()}mm입니다.`;
             errorEl.style.display = 'block';
@@ -239,7 +235,22 @@
         calculate();
     }
 
-    // 두께 검증 (최대 10)
+    // 입력이 완료되어 포커스가 벗어날 때(blur) 60 미만이면 최소값 60으로 보정 및 안내
+    function checkMinLimit(inputId, errorId, minLimit) {
+        const inputEl = document.getElementById(inputId);
+        const errorEl = document.getElementById(errorId);
+
+        if (inputEl.value === "") return;
+
+        const val = parseFloat(inputEl.value);
+        if (val < minLimit) {
+            inputEl.value = minLimit;
+            errorEl.innerText = `⚠️ 최소 입력 가능 길이는 ${minLimit}mm입니다.`;
+            errorEl.style.display = 'block';
+            calculate();
+        }
+    }
+
     function validateThickness() {
         const inputEl = document.getElementById('thickness');
         const errorEl = document.getElementById('thicknessError');
