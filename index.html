@@ -2,9 +2,24 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>맞춤 제작 단가 계산기</title>
     <style>
+        :root {
+            --paper: #FFFFFF;
+            --card: #FFFFFF;
+            --field: #FAFAFA;
+            --ink: #111111;
+            --ink-2: #6E6E6E;
+            --line: #E4E4E4;
+            --edge: #F2571B;       /* 주황 포인트 */
+            --edge-soft: #FFF2EC;
+            --edge-dark: #B33C0D;
+            --warn: #C0392B;
+            --warn-soft: #FDECEA;
+            --r: 14px;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -12,53 +27,50 @@
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-user-select: none;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        input {
+        input[type="number"] {
             -webkit-user-select: text;
             user-select: text;
         }
 
-        body {
-            background-color: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: var(--paper);
+            color: var(--ink);
+            /* 네이버 object 영역에서 스크롤바가 생기지 않도록 overflow 제어 */
+            overflow: hidden; 
         }
 
-        .calculator-card {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 400px;
+        .wrap {
+            max-width: 730px;
+            margin: 0 auto;
+            padding: 18px 14px 40px;
         }
 
-        h2 {
-            font-size: 1.25rem;
-            color: #111827;
-            margin-bottom: 20px;
-            text-align: center;
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--r);
+            padding: 18px 16px;
+            margin-bottom: 14px;
         }
 
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        label {
+        .lab {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .02em;
+            color: var(--ink-2);
+            margin-bottom: 8px;
             display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
         }
 
+        /* 라디오 버튼 그룹 스타일 */
         .radio-group {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .radio-label {
@@ -66,88 +78,117 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            padding: 12px;
+            border: 1.5px solid var(--line);
+            border-radius: 9px;
             cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #374151;
-            background-color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink-2);
+            background-color: #fff;
             transition: all 0.2s;
         }
 
         .radio-label input {
-            margin-right: 6px;
-            accent-color: #2563eb;
+            margin-right: 8px;
+            accent-color: var(--edge);
         }
 
         .radio-label:has(input:checked) {
-            border-color: #2563eb;
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            font-weight: 600;
+            border-color: var(--edge);
+            background-color: var(--edge-soft);
+            color: var(--edge-dark);
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-2);
+            margin-bottom: 6px;
         }
 
         input[type="number"] {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 1rem;
-            background-color: #ffffff;
+            font: inherit;
+            color: var(--ink);
+            background: #fff;
+            border: 1.5px solid var(--line);
+            border-radius: 9px;
+            padding: 11px 12px;
             outline: none;
             transition: border-color 0.2s;
         }
 
         input[type="number"]:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: var(--edge);
+            box-shadow: 0 0 0 3px var(--edge-soft);
+        }
+
+        input::placeholder {
+            color: #BDBDBD;
         }
 
         .error-msg {
             display: none;
-            color: #dc2626;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            font-weight: 500;
+            color: var(--warn);
+            font-size: 12px;
+            margin-top: 6px;
+            font-weight: 600;
         }
 
         .result-box {
-            margin-top: 24px;
-            padding: 16px;
-            background-color: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 8px;
+            background-color: var(--edge-soft);
+            border: 1.5px solid var(--edge);
+            border-radius: var(--r);
+            padding: 20px 16px;
             text-align: center;
         }
 
         .result-label {
-            font-size: 0.875rem;
-            color: #0369a1;
-            margin-bottom: 4px;
+            font-size: 14px;
+            color: var(--edge-dark);
+            font-weight: 700;
+            margin-bottom: 6px;
         }
 
         .result-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0c4a6e;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--edge-dark);
+            letter-spacing: -.02em;
         }
 
         .unit-price {
-            font-size: 0.9rem;
-            color: #6b7280;
-            margin-top: 6px;
+            font-size: 14px;
+            color: var(--ink-2);
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .order-guide {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #f2b8a0;
+            font-size: 13.5px;
+            color: var(--edge-dark);
+            font-weight: 700;
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div class="calculator-card">
-    <h2>맞춤 제작 단가 계산기</h2>
-    
-    <div class="input-group">
-        <label>재질 선택</label>
+<div class="wrap">
+    <div class="card">
+        <label class="lab">재질 선택</label>
         <div class="radio-group">
             <label class="radio-label">
                 <input type="radio" name="material" value="15000" checked onchange="calculate()"> 아크릴
@@ -158,33 +199,36 @@
         </div>
     </div>
 
-    <div class="input-group">
-        <label for="width">가로 (mm) - 60mm ~ 1,500mm</label>
-        <input type="number" id="width" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onblur="checkMinLimit('width', 'widthError', 60)" onkeydown="blurOnEnter(event)">
-        <div class="error-msg" id="widthError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
+    <div class="card">
+        <div class="input-group">
+            <label for="width">가로 (mm) - 60mm ~ 1,500mm</label>
+            <input type="number" id="width" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onblur="checkMinLimit('width', 'widthError', 60)" onkeydown="blurOnEnter(event)">
+            <div class="error-msg" id="widthError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
+        </div>
+
+        <div class="input-group" style="margin-top: 16px;">
+            <label for="height">세로 (mm) - 60mm ~ 1,500mm</label>
+            <input type="number" id="height" placeholder="세로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
+            <div class="error-msg" id="heightError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
+        </div>
+
+        <div class="input-group" style="margin-top: 16px;">
+            <label for="thickness">두께 (mm) - 최대 10mm</label>
+            <input type="number" id="thickness" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
+            <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
+        </div>
+
+        <div class="input-group" style="margin-top: 16px;">
+            <label for="quantity">수량 (개)</label>
+            <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity(false)" onblur="validateQuantity(true)" onkeydown="blurOnEnter(event)">
+        </div>
     </div>
 
-    <div class="input-group">
-        <label for="height">세로 (mm) - 60mm ~ 1,500mm</label>
-        <input type="number" id="height" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
-        <div class="error-msg" id="heightError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
-    </div>
-
-    <div class="input-group">
-        <label for="thickness">두께 (mm) - 최대 10mm</label>
-        <input type="number" id="thickness" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
-        <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
-    </div>
-
-    <div class="input-group">
-        <label for="quantity">수량 (개)</label>
-        <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity(false)" onblur="validateQuantity(true)" onkeydown="blurOnEnter(event)">
-    </div>
-
-    <div class="result-box">
+    <div class="card result-box">
         <div class="result-label">총 견적 금액</div>
         <div class="result-value"><span id="result">0</span> 원</div>
         <div class="unit-price" id="unitPriceText">개당 단가: 0원</div>
+        <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
     </div>
 </div>
 
@@ -196,6 +240,7 @@
         }
     }
 
+    // 소스 보기 및 개발자 도구 단축키 차단
     document.addEventListener('keydown', function(e) {
         if (e.key === 'F12' || e.keyCode === 123) {
             e.preventDefault();
@@ -211,7 +256,6 @@
         }
     });
 
-    // 입력 중에는 자유롭게 타이핑하게 두되, 1500 초과만 즉시 제한
     function validateAndCalculate(inputId, errorId, minLimit, maxLimit) {
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
@@ -235,7 +279,6 @@
         calculate();
     }
 
-    // 입력이 완료되어 포커스가 벗어날 때(blur) 60 미만이면 최소값 60으로 보정 및 안내
     function checkMinLimit(inputId, errorId, minLimit) {
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
@@ -297,6 +340,7 @@
         if (width === 0 || height === 0 || thickness === 0) {
             document.getElementById('result').innerText = '0';
             document.getElementById('unitPriceText').innerText = '개당 단가: 0원';
+            document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
             return;
         }
 
@@ -305,9 +349,13 @@
         const unitPrice = Math.max(1000, ceilingValue);
 
         const totalPrice = unitPrice * quantity;
+        
+        // 총 금액을 100으로 나눈 수량 계산 (소수점 발생 시 반올림 또는 올림 처리 선택 가능, 여기서는 반올림 적용)
+        const orderCount = Math.round(totalPrice / 100);
 
         document.getElementById('result').innerText = totalPrice.toLocaleString();
         document.getElementById('unitPriceText').innerText = `개당 단가: ${unitPrice.toLocaleString()}원`;
+        document.getElementById('orderGuideText').innerText = `네이버 주문 수량: ${orderCount.toLocaleString()}개 지정`;
     }
 </script>
 
