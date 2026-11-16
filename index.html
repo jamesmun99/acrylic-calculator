@@ -40,7 +40,6 @@
             padding: 0;
             background: var(--paper);
             color: var(--ink);
-            /* 네이버 object 영역에서 스크롤바가 생기지 않도록 overflow 제어 */
             overflow: hidden; 
         }
 
@@ -67,7 +66,6 @@
             display: block;
         }
 
-        /* 라디오 버튼 그룹 스타일 */
         .radio-group {
             display: flex;
             gap: 10px;
@@ -174,13 +172,39 @@
             font-weight: 600;
         }
 
-        .order-guide {
-            margin-top: 10px;
-            padding-top: 10px;
+        .order-guide-wrap {
+            margin-top: 12px;
+            padding-top: 12px;
             border-top: 1px dashed #f2b8a0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .order-guide {
             font-size: 13.5px;
             color: var(--edge-dark);
             font-weight: 700;
+            text-align: left;
+        }
+
+        /* 복사 버튼 스타일 */
+        .copy-btn {
+            background-color: var(--edge);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:active {
+            background-color: var(--edge-dark);
         }
     </style>
 </head>
@@ -228,11 +252,17 @@
         <div class="result-label">총 견적 금액</div>
         <div class="result-value"><span id="result">0</span> 원</div>
         <div class="unit-price" id="unitPriceText">개당 단가: 0원</div>
-        <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
+        
+        <div class="order-guide-wrap">
+            <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
+            <button class="copy-btn" onclick="copyOrderCount()">수량 복사하기</button>
+        </div>
     </div>
 </div>
 
 <script>
+    let currentOrderCount = 0; // 복사할 수량 저장 변수
+
     function blurOnEnter(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -240,7 +270,6 @@
         }
     }
 
-    // 소스 보기 및 개발자 도구 단축키 차단
     document.addEventListener('keydown', function(e) {
         if (e.key === 'F12' || e.keyCode === 123) {
             e.preventDefault();
@@ -341,6 +370,7 @@
             document.getElementById('result').innerText = '0';
             document.getElementById('unitPriceText').innerText = '개당 단가: 0원';
             document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
+            currentOrderCount = 0;
             return;
         }
 
@@ -350,12 +380,33 @@
 
         const totalPrice = unitPrice * quantity;
         
-        // 총 금액을 100으로 나눈 수량 계산 (소수점 발생 시 반올림 또는 올림 처리 선택 가능, 여기서는 반올림 적용)
-        const orderCount = Math.round(totalPrice / 100);
+        // 100으로 나눈 네이버 주문 수량 산출
+        currentOrderCount = Math.round(totalPrice / 100);
 
         document.getElementById('result').innerText = totalPrice.toLocaleString();
         document.getElementById('unitPriceText').innerText = `개당 단가: ${unitPrice.toLocaleString()}원`;
-        document.getElementById('orderGuideText').innerText = `네이버 주문 수량: ${orderCount.toLocaleString()}개 지정`;
+        document.getElementById('orderGuideText').innerText = `네이버 주문 수량: ${currentOrderCount.toLocaleString()}개 지정`;
+    }
+
+    // 클립보드 복사 함수 (모바일/PC 지원)
+    function copyOrderCount() {
+        if (currentOrderCount <= 0) {
+            alert('먼저 치수를 입력해 주세요!');
+            return;
+        }
+
+        navigator.clipboard.writeText(currentOrderCount.toString()).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = '복사완료! ✓';
+            btn.style.backgroundColor = '#111111';
+            
+            setTimeout(() => {
+                btn.innerText = '수량 복사하기';
+                btn.style.backgroundColor = '#F2571B';
+            }, 2000);
+        }).catch(err => {
+            alert('복사에 실패했습니다. 수량을 직접 입력해 주세요.');
+        });
     }
 </script>
 
