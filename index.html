@@ -40,13 +40,15 @@
             padding: 0;
             background: var(--paper);
             color: var(--ink);
-            overflow: hidden; 
+            /* 스크롤이 가능하도록 수정 */
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
         }
 
         .wrap {
             max-width: 730px;
             margin: 0 auto;
-            padding: 18px 14px 40px;
+            padding: 18px 14px 60px; /* 하단 여백을 넉넉하게 주어 스크롤이 자연스럽게 내려가도록 함 */
         }
 
         .card {
@@ -189,7 +191,6 @@
             text-align: left;
         }
 
-        /* 복사 버튼 스타일 */
         .copy-btn {
             background-color: var(--edge);
             color: #ffffff;
@@ -205,6 +206,28 @@
 
         .copy-btn:active {
             background-color: var(--edge-dark);
+        }
+
+        .naver-return-btn {
+            width: 100%;
+            margin-top: 14px;
+            background-color: #03C75A;
+            color: #ffffff;
+            border: none;
+            border-radius: 9px;
+            padding: 13px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .naver-return-btn:active {
+            opacity: 0.85;
         }
     </style>
 </head>
@@ -257,11 +280,15 @@
             <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
             <button class="copy-btn" onclick="copyOrderCount()">수량 복사하기</button>
         </div>
+
+        <button class="naver-return-btn" onclick="returnToNaverStore()">
+            <span>🟢 네이버 스토어 주문 화면으로 돌아가기</span>
+        </button>
     </div>
 </div>
 
 <script>
-    let currentOrderCount = 0; // 복사할 수량 저장 변수
+    let currentOrderCount = 0;
 
     function blurOnEnter(event) {
         if (event.key === 'Enter') {
@@ -380,7 +407,6 @@
 
         const totalPrice = unitPrice * quantity;
         
-        // 100으로 나눈 네이버 주문 수량 산출
         currentOrderCount = Math.round(totalPrice / 100);
 
         document.getElementById('result').innerText = totalPrice.toLocaleString();
@@ -388,7 +414,6 @@
         document.getElementById('orderGuideText').innerText = `네이버 주문 수량: ${currentOrderCount.toLocaleString()}개 지정`;
     }
 
-    // 클립보드 복사 함수 (모바일/PC 지원)
     function copyOrderCount() {
         if (currentOrderCount <= 0) {
             alert('먼저 치수를 입력해 주세요!');
@@ -407,6 +432,12 @@
         }).catch(err => {
             alert('복사에 실패했습니다. 수량을 직접 입력해 주세요.');
         });
+    }
+
+    function returnToNaverStore() {
+        // 본인의 네이버 스마트스토어 상품 상세페이지 URL로 변경해 주세요
+        const naverStoreUrl = 'https://smartstore.naver.com/bluemoonexpress/products/1234567890';
+        window.location.href = naverStoreUrl;
     }
 </script>
 
