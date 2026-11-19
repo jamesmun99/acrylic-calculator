@@ -40,15 +40,14 @@
             padding: 0;
             background: var(--paper);
             color: var(--ink);
-            /* 스크롤이 가능하도록 수정 */
-            overflow-y: auto; 
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
         .wrap {
             max-width: 730px;
             margin: 0 auto;
-            padding: 18px 14px 60px; /* 하단 여백을 넉넉하게 주어 스크롤이 자연스럽게 내려가도록 함 */
+            padding: 18px 14px 60px;
         }
 
         .card {
@@ -207,28 +206,6 @@
         .copy-btn:active {
             background-color: var(--edge-dark);
         }
-
-        .naver-return-btn {
-            width: 100%;
-            margin-top: 14px;
-            background-color: #03C75A;
-            color: #ffffff;
-            border: none;
-            border-radius: 9px;
-            padding: 13px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .naver-return-btn:active {
-            opacity: 0.85;
-        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -280,10 +257,6 @@
             <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
             <button class="copy-btn" onclick="copyOrderCount()">수량 복사하기</button>
         </div>
-
-        <button class="naver-return-btn" onclick="returnToNaverStore()">
-            <span>🟢 네이버 스토어 주문 화면으로 돌아가기</span>
-        </button>
     </div>
 </div>
 
@@ -432,12 +405,6 @@
         }).catch(err => {
             alert('복사에 실패했습니다. 수량을 직접 입력해 주세요.');
         });
-    }
-
-    function returnToNaverStore() {
-        // 본인의 네이버 스마트스토어 상품 상세페이지 URL로 변경해 주세요
-        const naverStoreUrl = 'https://smartstore.naver.com/bluemoonexpress/products/1234567890';
-        window.location.href = naverStoreUrl;
     }
 </script>
 
