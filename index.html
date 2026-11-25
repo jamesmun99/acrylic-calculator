@@ -1,15 +1,283 @@
-<!-- ... existing code ... -->
-        /* 선택 불가 재질 비활성화 스타일 */
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>맞춤 제작 단가 계산기</title>
+    <style>
+        :root {
+            --paper: #FFFFFF;
+            --card: #FFFFFF;
+            --field: #FAFAFA;
+            --ink: #111111;
+            --ink-2: #525252;
+            --line: #DCDCDC;
+            --edge: #F2571B;       /* 주황 포인트 */
+            --edge-soft: #FFF2EC;
+            --edge-dark: #B33C0D;
+            --warn: #C0392B;
+            --warn-soft: #FDECEA;
+            --r: 16px;
+        }
+
+        /* Fixed invalid '-' universal selector and enlarged base typography */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        input[type="number"], input[type="password"] {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        html {
+            font-size: clamp(17px, 0.35vw + 16px, 20px);
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: var(--paper);
+            color: var(--ink);
+            /* 모바일과 스토어 임베드 환경에서도 원활하게 아래로 스크롤 가능 */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            font-size: 16px;
+        }
+
+        /* 전체 화면과 카드 영역을 넉넉하게 확장 */
+        .wrap {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 28px 24px 80px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1.5px solid var(--line);
+            border-radius: var(--r);
+            padding: 24px 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        }
+
+        .lab {
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: .01em;
+            color: var(--ink);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* 4가지 재질 그리드 배치 (대형 버튼 및 라디오 확대) */
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 14px;
+            min-height: 58px;
+            border: 1.5px solid var(--line);
+            border-radius: 11px;
+            cursor: pointer;
+            font-size: 17.5px;
+            font-weight: 700;
+            color: var(--ink-2);
+            background-color: #fff;
+            transition: all 0.2s;
+        }
+
+        .radio-label input {
+            margin-right: 10px;
+            transform: scale(1.25);
+            accent-color: var(--edge);
+        }
+
+        .radio-label:has(input:checked) {
+            border-color: var(--edge);
+            background-color: var(--edge-soft);
+            color: var(--edge-dark);
+        }
+
+        /* 선택 불가 재질(포맥스, PC롤) 비활성화 스타일 */
         .radio-label.disabled,
         .radio-label:has(input:disabled) {
             background-color: #F3F3F3;
             border-color: #E2E2E2;
             color: #A6A6A6;
-            opacity: 0.55;
+            opacity: 0.65;
             cursor: not-allowed;
             pointer-events: none;
         }
-<!-- ... existing code ... -->
+
+        .radio-label input:disabled {
+            accent-color: #BDBDBD;
+            cursor: not-allowed;
+        }
+
+        .disabled-tag {
+            font-size: 13px;
+            font-weight: 600;
+            color: #9E9E9E;
+            margin-left: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 16.5px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        input[type="number"], input[type="password"] {
+            width: 100%;
+            min-height: 54px;
+            font: inherit;
+            font-size: 18.5px;
+            font-weight: 600;
+            color: var(--ink);
+            background: #fff;
+            border: 1.5px solid var(--line);
+            border-radius: 11px;
+            padding: 15px 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="number"]:focus, input[type="password"]:focus {
+            border-color: var(--edge);
+            box-shadow: 0 0 0 4px var(--edge-soft);
+        }
+
+        input::placeholder {
+            color: #BDBDBD;
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+        .error-msg {
+            display: none;
+            color: var(--warn);
+            font-size: 14.5px;
+            margin-top: 8px;
+            font-weight: 700;
+        }
+
+        .result-box {
+            background-color: var(--edge-soft);
+            border: 2px solid var(--edge);
+            border-radius: var(--r);
+            padding: 28px 24px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 17px;
+            color: var(--edge-dark);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--edge-dark);
+            letter-spacing: -.02em;
+            line-height: 1.2;
+        }
+
+        .unit-price {
+            font-size: 17.5px;
+            color: var(--ink-2);
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .order-guide-wrap {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1.5px dashed #f2b8a0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .order-guide {
+            font-size: 17.5px;
+            color: var(--edge-dark);
+            font-weight: 800;
+            text-align: left;
+        }
+
+        .copy-btn {
+            background-color: var(--edge);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            min-height: 48px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:active {
+            background-color: var(--edge-dark);
+            transform: scale(0.98);
+        }
+
+        /* 상단 블루문특급 사용자 전용 배너 스타일 */
+        .top-brand-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #FFF2EC 0%, #FFE4D9 100%);
+            border: 2px solid var(--edge);
+            border-radius: var(--r);
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            font-size: clamp(18px, 1.2vw + 13px, 22px);
+            font-weight: 800;
+            color: var(--edge-dark);
+            text-align: center;
+            letter-spacing: -0.01em;
+            box-shadow: 0 4px 14px rgba(242, 87, 27, 0.08);
+        }
+
+        /* 우측 하단 구석 관리자 로그인 링크 */
+        .admin-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            padding: 0 4px;
+        }
+
         .admin-trigger {
             font-size: 13px;
             color: #9A9A9A;
@@ -17,14 +285,14 @@
             border: none;
             cursor: pointer;
             padding: 6px 10px;
-            text-decoration: none;
+            text-decoration: underline;
         }
 
         .admin-trigger:hover {
             color: var(--ink-2);
         }
 
-        /* 관리자 패널 스타일 (재질 활성/비활성 토글 포함) */
+        /* 관리자 패널 스타일 (확대 및 넉넉한 행 간격) */
         .admin-panel {
             display: none;
             margin-top: 14px;
@@ -33,63 +301,112 @@
             border-radius: var(--r);
             padding: 24px 22px;
         }
-<!-- ... existing code ... -->
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid var(--line);
+        }
+
+        .admin-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .admin-close {
+            background: #E4E4E4;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
         .admin-row {
             display: grid;
-            grid-template-columns: 1.2fr 0.95fr 1fr 1.15fr;
+            grid-template-columns: 1.2fr 1fr 1.2fr;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 14px;
             font-size: 15.5px;
         }
 
         .admin-row-header {
-            font-size: 14.5px;
+            font-size: 15px;
             font-weight: 800;
             color: var(--ink-2);
             padding-bottom: 8px;
             border-bottom: 1.5px solid var(--line);
         }
 
-        .admin-toggle-label {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 9px 10px;
-            min-height: 44px;
-            border-radius: 9px;
-            border: 1.5px solid var(--line);
-            background: #FFFFFF;
-            cursor: pointer;
-            font-size: 14px;
+        .admin-mat-name {
             font-weight: 700;
             color: var(--ink);
-            margin-bottom: 0;
-            transition: all 0.15s;
+            font-size: 15.5px;
         }
 
-        .admin-toggle-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            min-height: auto;
-            margin: 0;
-            accent-color: var(--edge);
+        .admin-mat-unit {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-top: 2px;
+        }
+
+        .current-val-badge {
+            background: #EFEFEF;
+            padding: 11px 14px;
+            border-radius: 9px;
+            font-weight: 800;
+            color: #222;
+            text-align: right;
+            font-size: 15.5px;
+        }
+
+        .admin-input {
+            padding: 11px 14px !important;
+            min-height: 48px !important;
+            font-size: 15.5px !important;
+            text-align: right;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .admin-save-btn {
+            flex: 2;
+            background: #111111;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 16px;
+            min-height: 50px;
+            font-size: 15.5px;
+            font-weight: 700;
             cursor: pointer;
         }
 
-        .admin-toggle-label.is-on {
-            border-color: var(--edge);
-            background-color: var(--edge-soft);
-            color: var(--edge-dark);
+        .admin-reset-btn {
+            flex: 1;
+            background: #FFFFFF;
+            color: var(--warn);
+            border: 1.5px solid var(--warn);
+            border-radius: 10px;
+            padding: 14px 16px;
+            min-height: 50px;
+            font-size: 15.5px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
-        .admin-toggle-label.is-off {
-            border-color: #DCDCDC;
-            background-color: #F0F0F0;
-            color: #888888;
-        }
-<!-- ... existing code ... -->
         /* 모바일 화면 대응 패딩 및 견적 금액 스케일 조정 */
         @media (max-width: 640px) {
             .wrap {
@@ -112,17 +429,6 @@
             .radio-group {
                 grid-template-columns: 1fr;
             }
-
-            .admin-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                padding-bottom: 12px;
-                border-bottom: 1px dashed var(--line);
-            }
-
-            .admin-row-header {
-                display: none;
-            }
         }
     </style>
 </head>
@@ -137,17 +443,17 @@
     <div class="card">
         <label class="lab">재질 선택</label>
         <div class="radio-group">
-            <label class="radio-label" id="label_acrylic">
-                <input type="radio" name="material" id="mat_acrylic" value="acrylic" checked> 아크릴 <span class="disabled-tag" id="tag_acrylic" style="display: none;">(준비중)</span>
+            <label class="radio-label">
+                <input type="radio" name="material" value="acrylic" checked onchange="calculate()"> 아크릴
             </label>
-            <label class="radio-label" id="label_pc">
-                <input type="radio" name="material" id="mat_pc" value="pc"> PC (폴리카보네이트) <span class="disabled-tag" id="tag_pc" style="display: none;">(준비중)</span>
+            <label class="radio-label">
+                <input type="radio" name="material" value="pc" onchange="calculate()"> PC (폴리카보네이트)
             </label>
-            <label class="radio-label disabled" id="label_foamex" aria-disabled="true">
-                <input type="radio" name="material" id="mat_foamex" value="foamex" disabled> 포맥스 <span class="disabled-tag" id="tag_foamex">(준비중)</span>
+            <label class="radio-label disabled" aria-disabled="true">
+                <input type="radio" name="material" value="foamex" disabled> 포맥스 <span class="disabled-tag">(준비중)</span>
             </label>
-            <label class="radio-label disabled" id="label_pcroll" aria-disabled="true">
-                <input type="radio" name="material" id="mat_pcroll" value="pcroll" disabled> PC롤 <span class="disabled-tag" id="tag_pcroll">(준비중)</span>
+            <label class="radio-label disabled" aria-disabled="true">
+                <input type="radio" name="material" value="pcroll" disabled> PC롤 <span class="disabled-tag">(준비중)</span>
             </label>
         </div>
     </div>
@@ -155,25 +461,25 @@
     <div class="card">
         <div class="input-group">
             <label for="width">가로 (mm) - 60mm ~ 1,500mm</label>
-            <input type="number" id="width" placeholder="가로 입력 (60~1500)">
+            <input type="number" id="width" placeholder="가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onblur="checkMinLimit('width', 'widthError', 60)" onkeydown="blurOnEnter(event)">
             <div class="error-msg" id="widthError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
         </div>
 
-        <div class="input-group" style="margin-top: 22px;">
+        <div class="input-group">
             <label for="height">세로 (mm) - 60mm ~ 1,500mm</label>
-            <input type="number" id="height" placeholder="세로 입력 (60~1500)">
+            <input type="number" id="height" placeholder="세로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
             <div class="error-msg" id="heightError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
         </div>
 
-        <div class="input-group" style="margin-top: 22px;">
+        <div class="input-group">
             <label for="thickness">두께 (mm) - 최대 10mm</label>
-            <input type="number" id="thickness" placeholder="두께 입력 (최대 10)">
+            <input type="number" id="thickness" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
             <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
         </div>
 
-        <div class="input-group" style="margin-top: 22px;">
+        <div class="input-group">
             <label for="quantity">수량 (개)</label>
-            <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력">
+            <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity(false)" onblur="validateQuantity(true)" onkeydown="blurOnEnter(event)">
         </div>
     </div>
 
@@ -184,576 +490,307 @@
         
         <div class="order-guide-wrap">
             <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
-            <button type="button" class="copy-btn" id="copyOrderBtn">수량 복사하기</button>
+            <button type="button" class="copy-btn" onclick="copyOrderCount()">수량 복사하기</button>
         </div>
     </div>
 
-    <!-- 우측 하단 구석 관리자 로그인 버튼 -->
+    <!-- 구석 관리자 로그인 버튼 -->
     <div class="admin-footer">
-        <button type="button" class="admin-trigger" id="adminLoginBtn">블루문특급</button>
+        <button type="button" class="admin-trigger" onclick="openAdminLogin()">블루문특급</button>
     </div>
 
-    <!-- 관리자 단가 및 재질 선택 허용 설정 패널 (비밀번호 인증 후 표시) -->
+    <!-- 관리자 단가 설정 패널 (비밀번호 인증 후 표시) -->
     <div class="admin-panel" id="adminPanel">
         <div class="admin-header">
-            <span class="admin-title">⚙️ 재질 선택 허용 및 기준 단가 설정</span>
-            <button type="button" class="admin-close" id="adminCloseBtn">닫기</button>
+            <span class="admin-title">⚙️ 재질별 기준 단가 설정</span>
+            <button type="button" class="admin-close" onclick="closeAdminPanel()">닫기</button>
         </div>
 
         <div class="admin-row admin-row-header">
             <div>재질 (기준)</div>
-            <div style="text-align: center;">고객 선택</div>
             <div style="text-align: right;">현재 반영값</div>
             <div style="text-align: right;">신규 입력</div>
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">아크릴<span class="admin-mat-unit">kg당 단가 (원)</span></div>
-            <label class="admin-toggle-label is-on" id="toggle_wrap_acrylic">
-                <input type="checkbox" id="enable_acrylic" checked>
-                <span id="toggle_text_acrylic">선택 가능</span>
-            </label>
             <div class="current-val-badge" id="cur_acrylic">12,000원</div>
             <input type="number" class="admin-input" id="new_acrylic" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">PC<span class="admin-mat-unit">kg당 단가 (원)</span></div>
-            <label class="admin-toggle-label is-on" id="toggle_wrap_pc">
-                <input type="checkbox" id="enable_pc" checked>
-                <span id="toggle_text_pc">선택 가능</span>
-            </label>
             <div class="current-val-badge" id="cur_pc">16,000원</div>
             <input type="number" class="admin-input" id="new_pc" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">포맥스<span class="admin-mat-unit">원장당 (1220×2440)</span></div>
-            <label class="admin-toggle-label is-off" id="toggle_wrap_foamex">
-                <input type="checkbox" id="enable_foamex">
-                <span id="toggle_text_foamex">선택 불가</span>
-            </label>
             <div class="current-val-badge" id="cur_foamex">35,000원</div>
             <input type="number" class="admin-input" id="new_foamex" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">PC롤<span class="admin-mat-unit">롤당 (1000×30000)</span></div>
-            <label class="admin-toggle-label is-off" id="toggle_wrap_pcroll">
-                <input type="checkbox" id="enable_pcroll">
-                <span id="toggle_text_pcroll">선택 불가</span>
-            </label>
             <div class="current-val-badge" id="cur_pcroll">250,000원</div>
             <input type="number" class="admin-input" id="new_pcroll" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-actions">
-            <button type="button" class="admin-save-btn" id="adminSaveBtn">설정 저장 및 반영</button>
-            <button type="button" class="admin-reset-btn" id="adminResetBtn">기본값 복원</button>
+            <button type="button" class="admin-save-btn" onclick="saveAdminPrices()">신규 단가 저장 및 반영</button>
+            <button type="button" class="admin-reset-btn" onclick="resetDefaultPrices()">기본값 복원</button>
         </div>
     </div>
 </div>
 
 <script>
-    (function () {
-        const MATERIAL_KEYS = ['acrylic', 'pc', 'foamex', 'pcroll'];
-        let currentOrderCount = 0;
+    let currentOrderCount = 0;
 
-        // 기본 단가 설정
-        const DEFAULT_PRICES = {
-            acrylic: 12000,   // kg당
-            pc: 16000,        // kg당
-            foamex: 35000,    // 원장당 (1220 x 2440mm 기준)
-            pcroll: 250000    // 롤당 (1000 x 30000mm 기준)
-        };
+    // 기본 단가 설정
+    const DEFAULT_PRICES = {
+        acrylic: 12000,   // kg당
+        pc: 16000,        // kg당
+        foamex: 35000,    // 원장당 (1220 x 2440mm 기준)
+        pcroll: 250000    // 롤당 (1000 x 30000mm 기준)
+    };
 
-        // 기본 재질 선택 가능 여부 설정
-        const DEFAULT_MATERIALS = {
-            acrylic: true,
-            pc: true,
-            foamex: false,
-            pcroll: false
-        };
+    // 현재 반영 중인 단가 불러오기 (저장된 값이 있으면 불러오고 없으면 기본값 사용)
+    let activePrices = JSON.parse(localStorage.getItem('bluemoon_material_prices')) || { ...DEFAULT_PRICES };
 
-        function loadStoredObject(key, fallback) {
-            try {
-                const raw = localStorage.getItem(key);
-                if (!raw) return Object.assign({}, fallback);
-                const parsed = JSON.parse(raw);
-                return Object.assign({}, fallback, parsed && typeof parsed === 'object' ? parsed : {});
-            } catch (err) {
-                return Object.assign({}, fallback);
-            }
+    function blurOnEnter(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.target.blur();
+        }
+    }
+
+    // 소스 보기 및 개발자 도구 단축키 차단
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    function validateAndCalculate(inputId, errorId, minLimit, maxLimit) {
+        const inputEl = document.getElementById(inputId);
+        const errorEl = document.getElementById(errorId);
+        
+        if (inputEl.value === "") {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
         }
 
-        function saveStoredObject(key, value) {
-            try {
-                localStorage.setItem(key, JSON.stringify(value));
-            } catch (err) {
-                // 스토리지 접근 제한 환경 예외 무시
-            }
+        const val = parseFloat(inputEl.value);
+
+        if (val > maxLimit) {
+            inputEl.value = maxLimit;
+            errorEl.innerText = `⚠️ 최대 입력 가능 길이는 ${maxLimit.toLocaleString()}mm입니다.`;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
         }
 
-        let activePrices = loadStoredObject('bluemoon_material_prices', DEFAULT_PRICES);
-        let activeMaterials = loadStoredObject('bluemoon_material_enabled', DEFAULT_MATERIALS);
+        calculate();
+    }
 
-        function showNotice(msg) {
-            let box = document.getElementById('customNoticeBox');
-            if (!box) {
-                box = document.createElement('div');
-                box.id = 'customNoticeBox';
-                box.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#111111;color:#FFFFFF;padding:14px 22px;border-radius:12px;font-size:15px;font-weight:700;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.22);max-width:90vw;text-align:center;transition:opacity 0.2s;';
-                document.body.appendChild(box);
-            }
-            box.textContent = msg;
-            box.style.opacity = '1';
-            box.style.display = 'block';
-            clearTimeout(box._timer);
-            box._timer = setTimeout(function () {
-                box.style.opacity = '0';
-                setTimeout(function () {
-                    box.style.display = 'none';
-                }, 200);
-            }, 2400);
+    function checkMinLimit(inputId, errorId, minLimit) {
+        const inputEl = document.getElementById(inputId);
+        const errorEl = document.getElementById(errorId);
+
+        if (inputEl.value === "") return;
+
+        const val = parseFloat(inputEl.value);
+        if (val < minLimit) {
+            inputEl.value = minLimit;
+            errorEl.innerText = `⚠️ 최소 입력 가능 길이는 ${minLimit}mm입니다.`;
+            errorEl.style.display = 'block';
+            calculate();
+        }
+    }
+
+    function validateThickness() {
+        const inputEl = document.getElementById('thickness');
+        const errorEl = document.getElementById('thicknessError');
+
+        if (inputEl.value === "") {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
         }
 
-        function blurOnEnter(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                event.target.blur();
-            }
+        const val = parseFloat(inputEl.value);
+
+        if (val > 10) {
+            inputEl.value = 10;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
         }
 
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's')) {
-                e.preventDefault();
-                return false;
+        calculate();
+    }
+
+    function validateQuantity(isBlur) {
+        const qtyEl = document.getElementById('quantity');
+        if (isBlur && (qtyEl.value === '' || parseInt(qtyEl.value) < 1)) {
+            qtyEl.value = 1;
+        }
+        calculate();
+    }
+
+    function calculate() {
+        const selectedMaterial = document.querySelector('input[name="material"]:checked');
+        // 비활성화된 재질(포맥스, PC롤)이 강제 선택될 경우 아크릴로 안전하게 폴백
+        let matType = (selectedMaterial && !selectedMaterial.disabled) ? selectedMaterial.value : 'acrylic';
+        if (matType === 'foamex' || matType === 'pcroll') {
+            matType = 'acrylic';
+        }
+
+        const width = parseFloat(document.getElementById('width').value) || 0;
+        const height = parseFloat(document.getElementById('height').value) || 0;
+        const thickness = parseFloat(document.getElementById('thickness').value) || 0;
+        
+        let quantity = parseInt(document.getElementById('quantity').value);
+        if (isNaN(quantity) || quantity < 1) {
+            quantity = 1;
+        }
+
+        if (width === 0 || height === 0 || thickness === 0) {
+            document.getElementById('result').innerText = '0';
+            document.getElementById('unitPriceText').innerText = '개당 단가: 0원';
+            document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
+            currentOrderCount = 0;
+            return;
+        }
+
+        let rawValue = 0;
+
+        if (matType === 'acrylic' || matType === 'pc') {
+            // 아크릴, PC: 중량(kg) 기반 계산 (비중 1.19)
+            const kgPrice = activePrices[matType];
+            rawValue = ((width * height * thickness * 1.19) / 1000000 * kgPrice) + 500;
+        } else if (matType === 'foamex') {
+            // 포맥스: 원장(1220 x 2440mm) 면적 비율 기준 계산
+            const sheetArea = 1220 * 2440;
+            const sheetPrice = activePrices.foamex;
+            rawValue = ((width * height) / sheetArea * sheetPrice) + 500;
+        } else if (matType === 'pcroll') {
+            // PC롤: 롤(1000 x 30000mm) 면적 비율 기준 계산
+            const rollArea = 1000 * 30000;
+            const rollPrice = activePrices.pcroll;
+            rawValue = ((width * height) / rollArea * rollPrice) + 500;
+        }
+
+        const ceilingValue = Math.ceil(rawValue / 200) * 200;
+        const unitPrice = Math.max(1000, ceilingValue);
+
+        const totalPrice = unitPrice * quantity;
+        currentOrderCount = Math.round(totalPrice / 100);
+
+        document.getElementById('result').innerText = totalPrice.toLocaleString();
+        document.getElementById('unitPriceText').innerText = `개당 단가: ${unitPrice.toLocaleString()}원`;
+        document.getElementById('orderGuideText').innerText = `네이버 주문 수량: ${currentOrderCount.toLocaleString()}개 지정`;
+    }
+
+    function copyOrderCount() {
+        if (currentOrderCount <= 0) {
+            alert('먼저 치수를 입력해 주세요!');
+            return;
+        }
+
+        navigator.clipboard.writeText(currentOrderCount.toString()).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = '복사완료! ✓';
+            btn.style.backgroundColor = '#111111';
+            
+            setTimeout(() => {
+                btn.innerText = '수량 복사하기';
+                btn.style.backgroundColor = '#F2571B';
+            }, 2000);
+        }).catch(err => {
+            alert('복사에 실패했습니다. 수량을 직접 입력해 주세요.');
+        });
+    }
+
+    /* ================= 관리자 기능 ================= */
+    function openAdminLogin() {
+        const panel = document.getElementById('adminPanel');
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+            return;
+        }
+
+        const pw = prompt('관리자 비밀번호를 입력하세요.');
+        if (pw === '09072$$') {
+            updateAdminDisplay();
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth' });
+        } else if (pw !== null) {
+            alert('비밀번호가 일치하지 않습니다.');
+        }
+    }
+
+    function closeAdminPanel() {
+        document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    function updateAdminDisplay() {
+        document.getElementById('cur_acrylic').innerText = activePrices.acrylic.toLocaleString() + '원';
+        document.getElementById('cur_pc').innerText = activePrices.pc.toLocaleString() + '원';
+        document.getElementById('cur_foamex').innerText = activePrices.foamex.toLocaleString() + '원';
+        document.getElementById('cur_pcroll').innerText = activePrices.pcroll.toLocaleString() + '원';
+    }
+
+    function saveAdminPrices() {
+        const keys = ['acrylic', 'pc', 'foamex', 'pcroll'];
+        let isChanged = false;
+
+        keys.forEach(key => {
+            const inputEl = document.getElementById('new_' + key);
+            const val = parseFloat(inputEl.value);
+            // 신규 값이 유효하게 입력된 경우에만 반영, 비어있으면 기존 값 유지
+            if (!isNaN(val) && val > 0) {
+                activePrices[key] = val;
+                inputEl.value = ''; // 저장 후 입력칸 비움
+                isChanged = true;
             }
         });
 
-        function validateAndCalculate(inputId, errorId, maxLimit) {
-            const inputEl = document.getElementById(inputId);
-            const errorEl = document.getElementById(errorId);
-            if (!inputEl || !errorEl) return;
-
-            if (inputEl.value === '') {
-                errorEl.style.display = 'none';
-                calculate();
-                return;
-            }
-
-            const val = parseFloat(inputEl.value);
-            if (val > maxLimit) {
-                inputEl.value = maxLimit;
-                errorEl.textContent = '⚠️ 최대 입력 가능 길이는 ' + maxLimit.toLocaleString() + 'mm입니다.';
-                errorEl.style.display = 'block';
-            } else {
-                errorEl.style.display = 'none';
-            }
-
-            calculate();
-        }
-
-        function checkMinLimit(inputId, errorId, minLimit) {
-            const inputEl = document.getElementById(inputId);
-            const errorEl = document.getElementById(errorId);
-            if (!inputEl || !errorEl || inputEl.value === '') return;
-
-            const val = parseFloat(inputEl.value);
-            if (val < minLimit) {
-                inputEl.value = minLimit;
-                errorEl.textContent = '⚠️ 최소 입력 가능 길이는 ' + minLimit + 'mm입니다.';
-                errorEl.style.display = 'block';
-                calculate();
-            }
-        }
-
-        function validateThickness() {
-            const inputEl = document.getElementById('thickness');
-            const errorEl = document.getElementById('thicknessError');
-            if (!inputEl || !errorEl) return;
-
-            if (inputEl.value === '') {
-                errorEl.style.display = 'none';
-                calculate();
-                return;
-            }
-
-            const val = parseFloat(inputEl.value);
-            if (val > 10) {
-                inputEl.value = 10;
-                errorEl.style.display = 'block';
-            } else {
-                errorEl.style.display = 'none';
-            }
-
-            calculate();
-        }
-
-        function validateQuantity(isBlur) {
-            const qtyEl = document.getElementById('quantity');
-            if (!qtyEl) return;
-            if (isBlur && (qtyEl.value === '' || parseInt(qtyEl.value, 10) < 1)) {
-                qtyEl.value = 1;
-            }
-            calculate();
-        }
-
-        function calculate() {
-            let selectedMaterial = document.querySelector('input[name="material"]:checked');
-
-            if (!selectedMaterial || selectedMaterial.disabled || !activeMaterials[selectedMaterial.value]) {
-                const firstEnabledKey = MATERIAL_KEYS.find(function (key) {
-                    return Boolean(activeMaterials[key]);
-                });
-                if (firstEnabledKey) {
-                    const fallbackRadio = document.getElementById('mat_' + firstEnabledKey);
-                    if (fallbackRadio) {
-                        fallbackRadio.checked = true;
-                        selectedMaterial = fallbackRadio;
-                    }
-                }
-            }
-
-            const matType = selectedMaterial ? selectedMaterial.value : 'acrylic';
-            const width = parseFloat(document.getElementById('width').value) || 0;
-            const height = parseFloat(document.getElementById('height').value) || 0;
-            const thickness = parseFloat(document.getElementById('thickness').value) || 0;
-
-            let quantity = parseInt(document.getElementById('quantity').value, 10);
-            if (isNaN(quantity) || quantity < 1) {
-                quantity = 1;
-            }
-
-            if (width === 0 || height === 0 || thickness === 0) {
-                document.getElementById('result').textContent = '0';
-                document.getElementById('unitPriceText').textContent = '개당 단가: 0원';
-                document.getElementById('orderGuideText').textContent = '네이버 주문 수량: 0개 지정';
-                currentOrderCount = 0;
-                return;
-            }
-
-            let rawValue = 0;
-            if (matType === 'acrylic' || matType === 'pc') {
-                const kgPrice = activePrices[matType];
-                rawValue = ((width * height * thickness * 1.19) / 1000000 * kgPrice) + 500;
-            } else if (matType === 'foamex') {
-                const sheetArea = 1220 * 2440;
-                const sheetPrice = activePrices.foamex;
-                rawValue = ((width * height) / sheetArea * sheetPrice) + 500;
-            } else if (matType === 'pcroll') {
-                const rollArea = 1000 * 30000;
-                const rollPrice = activePrices.pcroll;
-                rawValue = ((width * height) / rollArea * rollPrice) + 500;
-            }
-
-            const ceilingValue = Math.ceil(rawValue / 200) * 200;
-            const unitPrice = Math.max(1000, ceilingValue);
-            const totalPrice = unitPrice * quantity;
-            currentOrderCount = Math.round(totalPrice / 100);
-
-            document.getElementById('result').textContent = totalPrice.toLocaleString();
-            document.getElementById('unitPriceText').textContent = '개당 단가: ' + unitPrice.toLocaleString() + '원';
-            document.getElementById('orderGuideText').textContent = '네이버 주문 수량: ' + currentOrderCount.toLocaleString() + '개 지정';
-        }
-
-        function copyOrderCount() {
-            if (currentOrderCount <= 0) {
-                showNotice('먼저 치수를 입력해 주세요!');
-                return;
-            }
-
-            const textToCopy = currentOrderCount.toString();
-            const btn = document.getElementById('copyOrderBtn');
-
-            function onCopySuccess() {
-                if (btn) {
-                    btn.textContent = '복사완료! ✓';
-                    btn.style.backgroundColor = '#111111';
-                    setTimeout(function () {
-                        btn.textContent = '수량 복사하기';
-                        btn.style.backgroundColor = '#F2571B';
-                    }, 2000);
-                }
-                showNotice('주문 수량 ' + currentOrderCount.toLocaleString() + '개가 복사되었습니다.');
-            }
-
-            const tempArea = document.createElement('textarea');
-            tempArea.value = textToCopy;
-            tempArea.style.position = 'fixed';
-            tempArea.style.opacity = '0';
-            document.body.appendChild(tempArea);
-            tempArea.focus();
-            tempArea.select();
-
-            let copied = false;
-            try {
-                copied = document.execCommand('copy');
-            } catch (e) {
-                copied = false;
-            }
-            document.body.removeChild(tempArea);
-
-            if (copied) {
-                onCopySuccess();
-            } else if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(textToCopy).then(onCopySuccess).catch(function () {
-                    showNotice('복사에 실패했습니다. 수량을 직접 입력해 주세요.');
-                });
-            } else {
-                showNotice('복사에 실패했습니다. 수량을 직접 입력해 주세요.');
-            }
-        }
-
-        function openAdminLogin() {
-            const panel = document.getElementById('adminPanel');
-            if (!panel) return;
-
-            if (panel.style.display === 'block') {
-                panel.style.display = 'none';
-                return;
-            }
-
-            const pw = window.prompt('관리자 비밀번호를 입력하세요.');
-            if (pw === '09072$$') {
-                updateAdminDisplay();
-                panel.style.display = 'block';
-                panel.scrollIntoView({ behavior: 'smooth' });
-            } else if (pw !== null) {
-                showNotice('비밀번호가 일치하지 않습니다.');
-            }
-        }
-
-        function closeAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            if (panel) panel.style.display = 'none';
-        }
-
-        function syncAdminToggleStyle(key) {
-            const chk = document.getElementById('enable_' + key);
-            const wrap = document.getElementById('toggle_wrap_' + key);
-            const txt = document.getElementById('toggle_text_' + key);
-            if (!chk || !wrap || !txt) return;
-
-            if (chk.checked) {
-                wrap.classList.remove('is-off');
-                wrap.classList.add('is-on');
-                txt.textContent = '선택 가능';
-            } else {
-                wrap.classList.remove('is-on');
-                wrap.classList.add('is-off');
-                txt.textContent = '선택 불가';
-            }
-        }
-
-        function applyMaterialAvailability() {
-            MATERIAL_KEYS.forEach(function (key) {
-                const isEnabled = Boolean(activeMaterials[key]);
-                const radioEl = document.getElementById('mat_' + key);
-                const labelEl = document.getElementById('label_' + key);
-                const tagEl = document.getElementById('tag_' + key);
-
-                if (radioEl && labelEl && tagEl) {
-                    radioEl.disabled = !isEnabled;
-                    if (isEnabled) {
-                        labelEl.classList.remove('disabled');
-                        labelEl.removeAttribute('aria-disabled');
-                        tagEl.style.display = 'none';
-                    } else {
-                        labelEl.classList.add('disabled');
-                        labelEl.setAttribute('aria-disabled', 'true');
-                        tagEl.style.display = 'inline';
-                        if (radioEl.checked) {
-                            radioEl.checked = false;
-                        }
-                    }
-                }
-            });
-
-            const checkedEnabled = MATERIAL_KEYS.find(function (key) {
-                const radioEl = document.getElementById('mat_' + key);
-                return activeMaterials[key] && radioEl && radioEl.checked;
-            });
-
-            if (!checkedEnabled) {
-                const firstEnabledKey = MATERIAL_KEYS.find(function (key) {
-                    return Boolean(activeMaterials[key]);
-                });
-                if (firstEnabledKey) {
-                    const firstRadio = document.getElementById('mat_' + firstEnabledKey);
-                    if (firstRadio) firstRadio.checked = true;
-                }
-            }
-        }
-
-        function updateAdminDisplay() {
-            MATERIAL_KEYS.forEach(function (key) {
-                const curEl = document.getElementById('cur_' + key);
-                if (curEl) {
-                    curEl.textContent = activePrices[key].toLocaleString() + '원';
-                }
-                const chk = document.getElementById('enable_' + key);
-                if (chk) {
-                    chk.checked = Boolean(activeMaterials[key]);
-                    syncAdminToggleStyle(key);
-                }
-            });
-        }
-
-        function saveAdminSettings() {
-            const nextMaterials = {};
-            let enabledCount = 0;
-
-            MATERIAL_KEYS.forEach(function (key) {
-                const chk = document.getElementById('enable_' + key);
-                const isChecked = chk ? chk.checked : false;
-                nextMaterials[key] = isChecked;
-                if (isChecked) enabledCount++;
-            });
-
-            if (enabledCount === 0) {
-                showNotice('최소 1개 이상의 재질은 "선택 가능" 상태여야 합니다.');
-                return;
-            }
-
-            let priceChanged = false;
-            let availabilityChanged = false;
-
-            MATERIAL_KEYS.forEach(function (key) {
-                if (activeMaterials[key] !== nextMaterials[key]) {
-                    availabilityChanged = true;
-                }
-                activeMaterials[key] = nextMaterials[key];
-
-                const inputEl = document.getElementById('new_' + key);
-                if (inputEl) {
-                    const val = parseFloat(inputEl.value);
-                    if (!isNaN(val) && val > 0) {
-                        activePrices[key] = val;
-                        inputEl.value = '';
-                        priceChanged = true;
-                    }
-                }
-            });
-
-            saveStoredObject('bluemoon_material_prices', activePrices);
-            saveStoredObject('bluemoon_material_enabled', activeMaterials);
-
-            applyMaterialAvailability();
+        if (isChanged) {
+            localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
             updateAdminDisplay();
-            calculate();
-
-            if (priceChanged || availabilityChanged) {
-                showNotice('재질 선택 설정 및 단가가 반영되었습니다.');
-            } else {
-                showNotice('현재 설정이 유지되었습니다.');
-            }
-        }
-
-        function resetDefaultPrices() {
-            activePrices = Object.assign({}, DEFAULT_PRICES);
-            activeMaterials = Object.assign({}, DEFAULT_MATERIALS);
-            saveStoredObject('bluemoon_material_prices', activePrices);
-            saveStoredObject('bluemoon_material_enabled', activeMaterials);
-
-            MATERIAL_KEYS.forEach(function (key) {
-                const inputEl = document.getElementById('new_' + key);
-                if (inputEl) inputEl.value = '';
-            });
-
-            applyMaterialAvailability();
-            updateAdminDisplay();
-            calculate();
-            showNotice('초기 기본 설정 및 단가로 복원되었습니다.');
-        }
-
-        function initApp() {
-            MATERIAL_KEYS.forEach(function (key) {
-                const radioEl = document.getElementById('mat_' + key);
-                if (radioEl) {
-                    radioEl.addEventListener('change', calculate);
-                }
-                const chkEl = document.getElementById('enable_' + key);
-                if (chkEl) {
-                    chkEl.addEventListener('change', function () {
-                        syncAdminToggleStyle(key);
-                    });
-                }
-            });
-
-            const widthEl = document.getElementById('width');
-            if (widthEl) {
-                widthEl.addEventListener('input', function () {
-                    validateAndCalculate('width', 'widthError', 1500);
-                });
-                widthEl.addEventListener('blur', function () {
-                    checkMinLimit('width', 'widthError', 60);
-                });
-                widthEl.addEventListener('keydown', blurOnEnter);
-            }
-
-            const heightEl = document.getElementById('height');
-            if (heightEl) {
-                heightEl.addEventListener('input', function () {
-                    validateAndCalculate('height', 'heightError', 1500);
-                });
-                heightEl.addEventListener('blur', function () {
-                    checkMinLimit('height', 'heightError', 60);
-                });
-                heightEl.addEventListener('keydown', blurOnEnter);
-            }
-
-            const thicknessEl = document.getElementById('thickness');
-            if (thicknessEl) {
-                thicknessEl.addEventListener('input', validateThickness);
-                thicknessEl.addEventListener('keydown', blurOnEnter);
-            }
-
-            const quantityEl = document.getElementById('quantity');
-            if (quantityEl) {
-                quantityEl.addEventListener('input', function () {
-                    validateQuantity(false);
-                });
-                quantityEl.addEventListener('blur', function () {
-                    validateQuantity(true);
-                });
-                quantityEl.addEventListener('keydown', blurOnEnter);
-            }
-
-            const copyBtn = document.getElementById('copyOrderBtn');
-            if (copyBtn) copyBtn.addEventListener('click', copyOrderCount);
-
-            const adminLoginBtn = document.getElementById('adminLoginBtn');
-            if (adminLoginBtn) adminLoginBtn.addEventListener('click', openAdminLogin);
-
-            const adminCloseBtn = document.getElementById('adminCloseBtn');
-            if (adminCloseBtn) adminCloseBtn.addEventListener('click', closeAdminPanel);
-
-            const adminSaveBtn = document.getElementById('adminSaveBtn');
-            if (adminSaveBtn) adminSaveBtn.addEventListener('click', saveAdminSettings);
-
-            const adminResetBtn = document.getElementById('adminResetBtn');
-            if (adminResetBtn) adminResetBtn.addEventListener('click', resetDefaultPrices);
-
-            applyMaterialAvailability();
-            updateAdminDisplay();
-            calculate();
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
+            calculate(); // 견적 계산 화면에 즉시 반영
+            alert('신규 단가가 반영되었습니다.');
         } else {
-            initApp();
+            alert('변경할 신규 단가를 입력해 주세요. (미입력 항목은 기존 단가가 유지됩니다.)');
         }
-    })();
+    }
+
+    function resetDefaultPrices() {
+        if (confirm('모든 재질 단가를 초기 기본값으로 되돌리시겠습니까?')) {
+            activePrices = { ...DEFAULT_PRICES };
+            localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
+            ['acrylic', 'pc', 'foamex', 'pcroll'].forEach(key => {
+                document.getElementById('new_' + key).value = '';
+            });
+            updateAdminDisplay();
+            calculate();
+            alert('초기 기본 단가로 복원되었습니다.');
+        }
+    }
+
+    // 페이지 로드 시 현재 단가 표시 초기화
+    updateAdminDisplay();
 </script>
 
 </body>
