@@ -111,6 +111,29 @@
             color: var(--edge-dark);
         }
 
+        /* 선택 불가 재질(포맥스, PC롤) 비활성화 스타일 */
+        .radio-label.disabled,
+        .radio-label:has(input:disabled) {
+            background-color: #F3F3F3;
+            border-color: #E2E2E2;
+            color: #A6A6A6;
+            opacity: 0.65;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .radio-label input:disabled {
+            accent-color: #BDBDBD;
+            cursor: not-allowed;
+        }
+
+        .disabled-tag {
+            font-size: 13px;
+            font-weight: 600;
+            color: #9E9E9E;
+            margin-left: 5px;
+        }
+
         .input-group {
             margin-bottom: 20px;
         }
@@ -262,7 +285,7 @@
             border: none;
             cursor: pointer;
             padding: 6px 10px;
-            text-decoration: none;
+            text-decoration: underline;
         }
 
         .admin-trigger:hover {
@@ -426,11 +449,11 @@
             <label class="radio-label">
                 <input type="radio" name="material" value="pc" onchange="calculate()"> PC (폴리카보네이트)
             </label>
-            <label class="radio-label">
-                <input type="radio" name="material" value="foamex" onchange="calculate()"> 포맥스
+            <label class="radio-label disabled" aria-disabled="true">
+                <input type="radio" name="material" value="foamex" disabled> 포맥스 <span class="disabled-tag">(준비중)</span>
             </label>
-            <label class="radio-label">
-                <input type="radio" name="material" value="pcroll" onchange="calculate()"> PC롤
+            <label class="radio-label disabled" aria-disabled="true">
+                <input type="radio" name="material" value="pcroll" disabled> PC롤 <span class="disabled-tag">(준비중)</span>
             </label>
         </div>
     </div>
@@ -627,7 +650,11 @@
 
     function calculate() {
         const selectedMaterial = document.querySelector('input[name="material"]:checked');
-        const matType = selectedMaterial ? selectedMaterial.value : 'acrylic';
+        // 비활성화된 재질(포맥스, PC롤)이 강제 선택될 경우 아크릴로 안전하게 폴백
+        let matType = (selectedMaterial && !selectedMaterial.disabled) ? selectedMaterial.value : 'acrylic';
+        if (matType === 'foamex' || matType === 'pcroll') {
+            matType = 'acrylic';
+        }
 
         const width = parseFloat(document.getElementById('width').value) || 0;
         const height = parseFloat(document.getElementById('height').value) || 0;
