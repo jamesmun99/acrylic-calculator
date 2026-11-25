@@ -10,17 +10,18 @@
             --card: #FFFFFF;
             --field: #FAFAFA;
             --ink: #111111;
-            --ink-2: #6E6E6E;
-            --line: #E4E4E4;
+            --ink-2: #525252;
+            --line: #DCDCDC;
             --edge: #F2571B;       /* 주황 포인트 */
             --edge-soft: #FFF2EC;
             --edge-dark: #B33C0D;
             --warn: #C0392B;
             --warn-soft: #FDECEA;
-            --r: 14px;
+            --r: 16px;
         }
 
-        * {
+        /* Fixed invalid '-' universal selector and enlarged base typography */
+        *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -35,62 +36,72 @@
             user-select: text;
         }
 
+        html {
+            font-size: clamp(17px, 0.35vw + 16px, 20px);
+        }
+
         html, body {
             margin: 0;
             padding: 0;
             background: var(--paper);
             color: var(--ink);
+            /* 모바일과 스토어 임베드 환경에서도 원활하게 아래로 스크롤 가능 */
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            font-size: 16px;
         }
 
+        /* 전체 화면과 카드 영역을 넉넉하게 확장 */
         .wrap {
-            max-width: 730px;
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 18px 14px 60px;
+            padding: 28px 24px 80px;
         }
 
         .card {
             background: var(--card);
-            border: 1px solid var(--line);
+            border: 1.5px solid var(--line);
             border-radius: var(--r);
-            padding: 18px 16px;
-            margin-bottom: 14px;
+            padding: 24px 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
         }
 
         .lab {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: .02em;
-            color: var(--ink-2);
-            margin-bottom: 8px;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: .01em;
+            color: var(--ink);
+            margin-bottom: 12px;
             display: block;
         }
 
-        /* 4가지 재질 그리드 배치 */
+        /* 4가지 재질 그리드 배치 (대형 버튼 및 라디오 확대) */
         .radio-group {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 12px;
         }
 
         .radio-label {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 8px;
+            padding: 16px 14px;
+            min-height: 58px;
             border: 1.5px solid var(--line);
-            border-radius: 9px;
+            border-radius: 11px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 17.5px;
+            font-weight: 700;
             color: var(--ink-2);
             background-color: #fff;
             transition: all 0.2s;
         }
 
         .radio-label input {
-            margin-right: 6px;
+            margin-right: 10px;
+            transform: scale(1.25);
             accent-color: var(--edge);
         }
 
@@ -101,7 +112,7 @@
         }
 
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .input-group:last-child {
@@ -110,84 +121,91 @@
 
         label {
             display: block;
-            font-size: 13px;
+            font-size: 16.5px;
             font-weight: 700;
-            color: var(--ink-2);
-            margin-bottom: 6px;
+            color: var(--ink);
+            margin-bottom: 8px;
         }
 
         input[type="number"], input[type="password"] {
             width: 100%;
+            min-height: 54px;
             font: inherit;
+            font-size: 18.5px;
+            font-weight: 600;
             color: var(--ink);
             background: #fff;
             border: 1.5px solid var(--line);
-            border-radius: 9px;
-            padding: 11px 12px;
+            border-radius: 11px;
+            padding: 15px 16px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input[type="number"]:focus, input[type="password"]:focus {
             border-color: var(--edge);
-            box-shadow: 0 0 0 3px var(--edge-soft);
+            box-shadow: 0 0 0 4px var(--edge-soft);
         }
 
         input::placeholder {
             color: #BDBDBD;
+            font-size: 17px;
+            font-weight: 500;
         }
 
         .error-msg {
             display: none;
             color: var(--warn);
-            font-size: 12px;
-            margin-top: 6px;
-            font-weight: 600;
+            font-size: 14.5px;
+            margin-top: 8px;
+            font-weight: 700;
         }
 
         .result-box {
             background-color: var(--edge-soft);
-            border: 1.5px solid var(--edge);
+            border: 2px solid var(--edge);
             border-radius: var(--r);
-            padding: 20px 16px;
+            padding: 28px 24px;
             text-align: center;
         }
 
         .result-label {
-            font-size: 14px;
+            font-size: 17px;
             color: var(--edge-dark);
-            font-weight: 700;
-            margin-bottom: 6px;
+            font-weight: 800;
+            margin-bottom: 8px;
         }
 
         .result-value {
-            font-size: 26px;
+            font-size: 42px;
             font-weight: 800;
             color: var(--edge-dark);
             letter-spacing: -.02em;
+            line-height: 1.2;
         }
 
         .unit-price {
-            font-size: 14px;
+            font-size: 17.5px;
             color: var(--ink-2);
-            margin-top: 8px;
-            font-weight: 600;
+            margin-top: 10px;
+            font-weight: 700;
         }
 
         .order-guide-wrap {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px dashed #f2b8a0;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1.5px dashed #f2b8a0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .order-guide {
-            font-size: 13.5px;
+            font-size: 17.5px;
             color: var(--edge-dark);
-            font-weight: 700;
+            font-weight: 800;
             text-align: left;
         }
 
@@ -195,34 +213,55 @@
             background-color: var(--edge);
             color: #ffffff;
             border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 13px;
+            border-radius: 10px;
+            padding: 12px 20px;
+            min-height: 48px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
             white-space: nowrap;
         }
 
         .copy-btn:active {
             background-color: var(--edge-dark);
+            transform: scale(0.98);
+        }
+
+        /* 상단 블루문특급 사용자 전용 배너 스타일 */
+        .top-brand-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #FFF2EC 0%, #FFE4D9 100%);
+            border: 2px solid var(--edge);
+            border-radius: var(--r);
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            font-size: clamp(18px, 1.2vw + 13px, 22px);
+            font-weight: 800;
+            color: var(--edge-dark);
+            text-align: center;
+            letter-spacing: -0.01em;
+            box-shadow: 0 4px 14px rgba(242, 87, 27, 0.08);
         }
 
         /* 우측 하단 구석 관리자 로그인 링크 */
         .admin-footer {
             display: flex;
             justify-content: flex-end;
-            margin-top: 6px;
+            margin-top: 10px;
             padding: 0 4px;
         }
 
         .admin-trigger {
-            font-size: 11px;
-            color: #B0B0B0;
+            font-size: 13px;
+            color: #9A9A9A;
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px 6px;
+            padding: 6px 10px;
             text-decoration: underline;
         }
 
@@ -230,27 +269,27 @@
             color: var(--ink-2);
         }
 
-        /* 관리자 패널 스타일 */
+        /* 관리자 패널 스타일 (확대 및 넉넉한 행 간격) */
         .admin-panel {
             display: none;
-            margin-top: 12px;
+            margin-top: 14px;
             background: #FAFAFA;
             border: 1.5px solid #D0D0D0;
             border-radius: var(--r);
-            padding: 18px 16px;
+            padding: 24px 22px;
         }
 
         .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--line);
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid var(--line);
         }
 
         .admin-title {
-            font-size: 14px;
+            font-size: 17px;
             font-weight: 800;
             color: var(--ink);
         }
@@ -258,62 +297,65 @@
         .admin-close {
             background: #E4E4E4;
             border: none;
-            border-radius: 6px;
-            padding: 4px 10px;
-            font-size: 12px;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14.5px;
             font-weight: 700;
             cursor: pointer;
         }
 
         .admin-row {
             display: grid;
-            grid-template-columns: 1.1fr 1fr 1.2fr;
+            grid-template-columns: 1.2fr 1fr 1.2fr;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            font-size: 13px;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-size: 15.5px;
         }
 
         .admin-row-header {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
             color: var(--ink-2);
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--line);
+            padding-bottom: 8px;
+            border-bottom: 1.5px solid var(--line);
         }
 
         .admin-mat-name {
             font-weight: 700;
             color: var(--ink);
+            font-size: 15.5px;
         }
 
         .admin-mat-unit {
             display: block;
-            font-size: 11px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--ink-2);
+            margin-top: 2px;
         }
 
         .current-val-badge {
             background: #EFEFEF;
-            padding: 8px 10px;
-            border-radius: 7px;
-            font-weight: 700;
-            color: #333;
+            padding: 11px 14px;
+            border-radius: 9px;
+            font-weight: 800;
+            color: #222;
             text-align: right;
-            font-size: 13px;
+            font-size: 15.5px;
         }
 
         .admin-input {
-            padding: 8px 10px !important;
-            font-size: 13px !important;
+            padding: 11px 14px !important;
+            min-height: 48px !important;
+            font-size: 15.5px !important;
             text-align: right;
         }
 
         .admin-actions {
             display: flex;
-            gap: 8px;
-            margin-top: 14px;
+            gap: 12px;
+            margin-top: 18px;
         }
 
         .admin-save-btn {
@@ -321,9 +363,10 @@
             background: #111111;
             color: #FFFFFF;
             border: none;
-            border-radius: 8px;
-            padding: 11px;
-            font-size: 13px;
+            border-radius: 10px;
+            padding: 14px 16px;
+            min-height: 50px;
+            font-size: 15.5px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -332,18 +375,48 @@
             flex: 1;
             background: #FFFFFF;
             color: var(--warn);
-            border: 1px solid var(--warn);
-            border-radius: 8px;
-            padding: 11px;
-            font-size: 13px;
+            border: 1.5px solid var(--warn);
+            border-radius: 10px;
+            padding: 14px 16px;
+            min-height: 50px;
+            font-size: 15.5px;
             font-weight: 700;
             cursor: pointer;
+        }
+
+        /* 모바일 화면 대응 패딩 및 견적 금액 스케일 조정 */
+        @media (max-width: 640px) {
+            .wrap {
+                padding: 20px 14px 64px;
+            }
+
+            .top-brand-banner {
+                padding: 14px 16px;
+                margin-bottom: 16px;
+            }
+
+            .card {
+                padding: 20px 16px;
+            }
+
+            .result-value {
+                font-size: 36px;
+            }
+
+            .radio-group {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
 <div class="wrap">
+    <!-- 최상단 사용자 전용 안내 배너 -->
+    <div class="top-brand-banner">
+        <span>네이버스토어 블루문특급 사용자 전용</span>
+    </div>
+
     <div class="card">
         <label class="lab">재질 선택</label>
         <div class="radio-group">
@@ -369,19 +442,19 @@
             <div class="error-msg" id="widthError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
         </div>
 
-        <div class="input-group" style="margin-top: 16px;">
+        <div class="input-group">
             <label for="height">세로 (mm) - 60mm ~ 1,500mm</label>
             <input type="number" id="height" placeholder="세로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
             <div class="error-msg" id="heightError">⚠️ 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
         </div>
 
-        <div class="input-group" style="margin-top: 16px;">
+        <div class="input-group">
             <label for="thickness">두께 (mm) - 최대 10mm</label>
             <input type="number" id="thickness" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
             <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
         </div>
 
-        <div class="input-group" style="margin-top: 16px;">
+        <div class="input-group">
             <label for="quantity">수량 (개)</label>
             <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity(false)" onblur="validateQuantity(true)" onkeydown="blurOnEnter(event)">
         </div>
@@ -394,20 +467,20 @@
         
         <div class="order-guide-wrap">
             <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
-            <button class="copy-btn" onclick="copyOrderCount()">수량 복사하기</button>
+            <button type="button" class="copy-btn" onclick="copyOrderCount()">수량 복사하기</button>
         </div>
     </div>
 
     <!-- 구석 관리자 로그인 버튼 -->
     <div class="admin-footer">
-        <button class="admin-trigger" onclick="openAdminLogin()">관리자 로그인</button>
+        <button type="button" class="admin-trigger" onclick="openAdminLogin()">블루문특급</button>
     </div>
 
     <!-- 관리자 단가 설정 패널 (비밀번호 인증 후 표시) -->
     <div class="admin-panel" id="adminPanel">
         <div class="admin-header">
             <span class="admin-title">⚙️ 재질별 기준 단가 설정</span>
-            <button class="admin-close" onclick="closeAdminPanel()">닫기</button>
+            <button type="button" class="admin-close" onclick="closeAdminPanel()">닫기</button>
         </div>
 
         <div class="admin-row admin-row-header">
@@ -441,8 +514,8 @@
         </div>
 
         <div class="admin-actions">
-            <button class="admin-save-btn" onclick="saveAdminPrices()">신규 단가 저장 및 반영</button>
-            <button class="admin-reset-btn" onclick="resetDefaultPrices()">기본값 복원</button>
+            <button type="button" class="admin-save-btn" onclick="saveAdminPrices()">신규 단가 저장 및 반영</button>
+            <button type="button" class="admin-reset-btn" onclick="resetDefaultPrices()">기본값 복원</button>
         </div>
     </div>
 </div>
@@ -468,6 +541,7 @@
         }
     }
 
+    // 소스 보기 및 개발자 도구 단축키 차단
     document.addEventListener('keydown', function(e) {
         if (e.key === 'F12' || e.keyCode === 123) {
             e.preventDefault();
