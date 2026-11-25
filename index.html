@@ -20,7 +20,6 @@
             --r: 16px;
         }
 
-        /* Fixed invalid '-' universal selector and enlarged base typography */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -45,13 +44,11 @@
             padding: 0;
             background: var(--paper);
             color: var(--ink);
-            /* 모바일과 스토어 임베드 환경에서도 원활하게 아래로 스크롤 가능 */
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             font-size: 16px;
         }
 
-        /* 전체 화면과 카드 영역을 넉넉하게 확장 */
         .wrap {
             max-width: 1120px;
             margin: 0 auto;
@@ -76,7 +73,7 @@
             display: block;
         }
 
-        /* 4가지 재질 그리드 배치 (대형 버튼 및 라디오 확대) */
+        /* 4가지 재질 그리드 배치 */
         .radio-group {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -111,7 +108,7 @@
             color: var(--edge-dark);
         }
 
-        /* 선택 불가 재질(포맥스, PC롤) 비활성화 스타일 */
+        /* 비활성화된 재질 스타일 */
         .radio-label.disabled,
         .radio-label:has(input:disabled) {
             background-color: #F3F3F3;
@@ -285,14 +282,14 @@
             border: none;
             cursor: pointer;
             padding: 6px 10px;
-            text-decoration: underline;
+            text-decoration: none;
         }
 
         .admin-trigger:hover {
             color: var(--ink-2);
         }
 
-        /* 관리자 패널 스타일 (확대 및 넉넉한 행 간격) */
+        /* 관리자 패널 스타일 */
         .admin-panel {
             display: none;
             margin-top: 14px;
@@ -329,15 +326,15 @@
 
         .admin-row {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1.2fr;
+            grid-template-columns: 1.15fr 1.05fr 1fr 1.15fr;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 14px;
-            font-size: 15.5px;
+            font-size: 15px;
         }
 
         .admin-row-header {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 800;
             color: var(--ink-2);
             padding-bottom: 8px;
@@ -352,26 +349,95 @@
 
         .admin-mat-unit {
             display: block;
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             color: var(--ink-2);
             margin-top: 2px;
         }
 
+        /* 관리자 활성화/비활성화 토글 스위치 UI */
+        .switch-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 0;
+            padding: 8px 10px;
+            border-radius: 9px;
+            background: #FFFFFF;
+            border: 1.5px solid var(--line);
+            cursor: pointer;
+        }
+
+        .switch-control input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            background-color: #CCCCCC;
+            border-radius: 24px;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .switch-slider::before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+
+        .switch-control input:checked + .switch-slider {
+            background-color: var(--edge);
+        }
+
+        .switch-control input:checked + .switch-slider::before {
+            transform: translateX(20px);
+        }
+
+        .switch-status-text {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--edge-dark);
+            min-width: 44px;
+            text-align: left;
+        }
+
+        .switch-control.is-inactive {
+            background: #F2F2F2;
+        }
+
+        .switch-control.is-inactive .switch-status-text {
+            color: #888888;
+        }
+
         .current-val-badge {
             background: #EFEFEF;
-            padding: 11px 14px;
+            padding: 11px 12px;
             border-radius: 9px;
             font-weight: 800;
             color: #222;
             text-align: right;
-            font-size: 15.5px;
+            font-size: 15px;
         }
 
         .admin-input {
-            padding: 11px 14px !important;
+            padding: 11px 12px !important;
             min-height: 48px !important;
-            font-size: 15.5px !important;
+            font-size: 15px !important;
             text-align: right;
         }
 
@@ -407,7 +473,6 @@
             cursor: pointer;
         }
 
-        /* 모바일 화면 대응 패딩 및 견적 금액 스케일 조정 */
         @media (max-width: 640px) {
             .wrap {
                 padding: 20px 14px 64px;
@@ -429,6 +494,18 @@
             .radio-group {
                 grid-template-columns: 1fr;
             }
+
+            .admin-row {
+                grid-template-columns: 1fr 1fr;
+                background: #FFFFFF;
+                padding: 12px;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+            }
+
+            .admin-row-header {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -443,17 +520,17 @@
     <div class="card">
         <label class="lab">재질 선택</label>
         <div class="radio-group">
-            <label class="radio-label">
-                <input type="radio" name="material" value="acrylic" checked onchange="calculate()"> 아크릴
+            <label class="radio-label" id="label_acrylic">
+                <input type="radio" name="material" value="acrylic" checked onchange="calculate()"> 아크릴 <span class="disabled-tag" id="tag_acrylic" style="display: none;">(준비중)</span>
             </label>
-            <label class="radio-label">
-                <input type="radio" name="material" value="pc" onchange="calculate()"> PC (폴리카보네이트)
+            <label class="radio-label" id="label_pc">
+                <input type="radio" name="material" value="pc" onchange="calculate()"> PC (폴리카보네이트) <span class="disabled-tag" id="tag_pc" style="display: none;">(준비중)</span>
             </label>
-            <label class="radio-label disabled" aria-disabled="true">
-                <input type="radio" name="material" value="foamex" disabled> 포맥스 <span class="disabled-tag">(준비중)</span>
+            <label class="radio-label disabled" id="label_foamex" aria-disabled="true">
+                <input type="radio" name="material" value="foamex" disabled onchange="calculate()"> 포맥스 <span class="disabled-tag" id="tag_foamex">(준비중)</span>
             </label>
-            <label class="radio-label disabled" aria-disabled="true">
-                <input type="radio" name="material" value="pcroll" disabled> PC롤 <span class="disabled-tag">(준비중)</span>
+            <label class="radio-label disabled" id="label_pcroll" aria-disabled="true">
+                <input type="radio" name="material" value="pcroll" disabled onchange="calculate()"> PC롤 <span class="disabled-tag" id="tag_pcroll">(준비중)</span>
             </label>
         </div>
     </div>
@@ -499,52 +576,74 @@
         <button type="button" class="admin-trigger" onclick="openAdminLogin()">블루문특급</button>
     </div>
 
-    <!-- 관리자 단가 설정 패널 (비밀번호 인증 후 표시) -->
+    <!-- 관리자 설정 패널 (비밀번호 인증 후 표시) -->
     <div class="admin-panel" id="adminPanel">
         <div class="admin-header">
-            <span class="admin-title">⚙️ 재질별 기준 단가 설정</span>
+            <span class="admin-title">⚙️ 재질 활성화 및 기준 단가 설정</span>
             <button type="button" class="admin-close" onclick="closeAdminPanel()">닫기</button>
         </div>
 
         <div class="admin-row admin-row-header">
             <div>재질 (기준)</div>
+            <div style="text-align: center;">활성화 여부</div>
             <div style="text-align: right;">현재 반영값</div>
-            <div style="text-align: right;">신규 입력</div>
+            <div style="text-align: right;">신규 단가 입력</div>
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">아크릴<span class="admin-mat-unit">kg당 단가 (원)</span></div>
+            <label class="switch-control" id="toggle_wrap_acrylic">
+                <input type="checkbox" id="enable_acrylic" checked onchange="syncToggleLabel('acrylic')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_acrylic">활성</span>
+            </label>
             <div class="current-val-badge" id="cur_acrylic">12,000원</div>
             <input type="number" class="admin-input" id="new_acrylic" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">PC<span class="admin-mat-unit">kg당 단가 (원)</span></div>
+            <label class="switch-control" id="toggle_wrap_pc">
+                <input type="checkbox" id="enable_pc" checked onchange="syncToggleLabel('pc')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_pc">활성</span>
+            </label>
             <div class="current-val-badge" id="cur_pc">16,000원</div>
             <input type="number" class="admin-input" id="new_pc" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">포맥스<span class="admin-mat-unit">원장당 (1220×2440)</span></div>
+            <label class="switch-control is-inactive" id="toggle_wrap_foamex">
+                <input type="checkbox" id="enable_foamex" onchange="syncToggleLabel('foamex')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_foamex">비활성</span>
+            </label>
             <div class="current-val-badge" id="cur_foamex">35,000원</div>
             <input type="number" class="admin-input" id="new_foamex" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-row">
             <div class="admin-mat-name">PC롤<span class="admin-mat-unit">롤당 (1000×30000)</span></div>
+            <label class="switch-control is-inactive" id="toggle_wrap_pcroll">
+                <input type="checkbox" id="enable_pcroll" onchange="syncToggleLabel('pcroll')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_pcroll">비활성</span>
+            </label>
             <div class="current-val-badge" id="cur_pcroll">250,000원</div>
             <input type="number" class="admin-input" id="new_pcroll" placeholder="미입력시 유지">
         </div>
 
         <div class="admin-actions">
-            <button type="button" class="admin-save-btn" onclick="saveAdminPrices()">신규 단가 저장 및 반영</button>
-            <button type="button" class="admin-reset-btn" onclick="resetDefaultPrices()">기본값 복원</button>
+            <button type="button" class="admin-save-btn" onclick="saveAdminSettings()">설정 저장 및 반영</button>
+            <button type="button" class="admin-reset-btn" onclick="resetDefaultSettings()">기본값 복원</button>
         </div>
     </div>
 </div>
 
 <script>
     let currentOrderCount = 0;
+    const MATERIAL_KEYS = ['acrylic', 'pc', 'foamex', 'pcroll'];
 
     // 기본 단가 설정
     const DEFAULT_PRICES = {
@@ -554,8 +653,20 @@
         pcroll: 250000    // 롤당 (1000 x 30000mm 기준)
     };
 
-    // 현재 반영 중인 단가 불러오기 (저장된 값이 있으면 불러오고 없으면 기본값 사용)
+    // 기본 재질 활성화 설정 (초기에는 아크릴, PC만 활성 / 포맥스, PC롤은 비활성)
+    const DEFAULT_ENABLED = {
+        acrylic: true,
+        pc: true,
+        foamex: false,
+        pcroll: false
+    };
+
+    // 저장된 단가 및 재질 활성화 상태 불러오기
     let activePrices = JSON.parse(localStorage.getItem('bluemoon_material_prices')) || { ...DEFAULT_PRICES };
+    let activeEnabled = Object.assign(
+        { ...DEFAULT_ENABLED },
+        JSON.parse(localStorage.getItem('bluemoon_material_enabled')) || {}
+    );
 
     function blurOnEnter(event) {
         if (event.key === 'Enter') {
@@ -648,13 +759,46 @@
         calculate();
     }
 
+    // 고객 화면의 재질 선택 버튼 활성/비활성 상태 반영
+    function applyMaterialAvailability() {
+        let firstAvailableRadio = null;
+
+        MATERIAL_KEYS.forEach(key => {
+            const isEnabled = !!activeEnabled[key];
+            const labelEl = document.getElementById('label_' + key);
+            const tagEl = document.getElementById('tag_' + key);
+            const radioEl = document.querySelector(`input[name="material"][value="${key}"]`);
+
+            if (!labelEl || !radioEl) return;
+
+            radioEl.disabled = !isEnabled;
+            if (isEnabled) {
+                labelEl.classList.remove('disabled');
+                labelEl.removeAttribute('aria-disabled');
+                if (tagEl) tagEl.style.display = 'none';
+                if (!firstAvailableRadio) firstAvailableRadio = radioEl;
+            } else {
+                labelEl.classList.add('disabled');
+                labelEl.setAttribute('aria-disabled', 'true');
+                if (tagEl) tagEl.style.display = 'inline';
+                if (radioEl.checked) {
+                    radioEl.checked = false;
+                }
+            }
+        });
+
+        // 현재 체크된 활성 재질이 없으면 활성화된 첫 번째 재질을 자동 선택
+        const currentChecked = document.querySelector('input[name="material"]:checked');
+        if ((!currentChecked || currentChecked.disabled) && firstAvailableRadio) {
+            firstAvailableRadio.checked = true;
+        }
+    }
+
     function calculate() {
         const selectedMaterial = document.querySelector('input[name="material"]:checked');
-        // 비활성화된 재질(포맥스, PC롤)이 강제 선택될 경우 아크릴로 안전하게 폴백
-        let matType = (selectedMaterial && !selectedMaterial.disabled) ? selectedMaterial.value : 'acrylic';
-        if (matType === 'foamex' || matType === 'pcroll') {
-            matType = 'acrylic';
-        }
+        let matType = (selectedMaterial && !selectedMaterial.disabled && activeEnabled[selectedMaterial.value])
+            ? selectedMaterial.value
+            : (MATERIAL_KEYS.find(k => activeEnabled[k]) || 'acrylic');
 
         const width = parseFloat(document.getElementById('width').value) || 0;
         const height = parseFloat(document.getElementById('height').value) || 0;
@@ -723,6 +867,21 @@
     }
 
     /* ================= 관리자 기능 ================= */
+    function syncToggleLabel(key) {
+        const cb = document.getElementById('enable_' + key);
+        const wrap = document.getElementById('toggle_wrap_' + key);
+        const txt = document.getElementById('enable_text_' + key);
+        if (!cb || !wrap || !txt) return;
+
+        if (cb.checked) {
+            wrap.classList.remove('is-inactive');
+            txt.innerText = '활성';
+        } else {
+            wrap.classList.add('is-inactive');
+            txt.innerText = '비활성';
+        }
+    }
+
     function openAdminLogin() {
         const panel = document.getElementById('adminPanel');
         if (panel.style.display === 'block') {
@@ -745,51 +904,71 @@
     }
 
     function updateAdminDisplay() {
-        document.getElementById('cur_acrylic').innerText = activePrices.acrylic.toLocaleString() + '원';
-        document.getElementById('cur_pc').innerText = activePrices.pc.toLocaleString() + '원';
-        document.getElementById('cur_foamex').innerText = activePrices.foamex.toLocaleString() + '원';
-        document.getElementById('cur_pcroll').innerText = activePrices.pcroll.toLocaleString() + '원';
+        MATERIAL_KEYS.forEach(key => {
+            document.getElementById('cur_' + key).innerText = activePrices[key].toLocaleString() + '원';
+            const cb = document.getElementById('enable_' + key);
+            if (cb) {
+                cb.checked = !!activeEnabled[key];
+                syncToggleLabel(key);
+            }
+        });
     }
 
-    function saveAdminPrices() {
-        const keys = ['acrylic', 'pc', 'foamex', 'pcroll'];
-        let isChanged = false;
+    function saveAdminSettings() {
+        const nextEnabled = {};
+        let enabledCount = 0;
 
-        keys.forEach(key => {
+        MATERIAL_KEYS.forEach(key => {
+            const isChecked = document.getElementById('enable_' + key).checked;
+            nextEnabled[key] = isChecked;
+            if (isChecked) enabledCount++;
+        });
+
+        // 최소 1개 재질은 활성화되도록 보호
+        if (enabledCount === 0) {
+            alert('최소 1개 이상의 재질은 활성화해야 합니다.');
+            return;
+        }
+
+        MATERIAL_KEYS.forEach(key => {
             const inputEl = document.getElementById('new_' + key);
             const val = parseFloat(inputEl.value);
-            // 신규 값이 유효하게 입력된 경우에만 반영, 비어있으면 기존 값 유지
             if (!isNaN(val) && val > 0) {
                 activePrices[key] = val;
-                inputEl.value = ''; // 저장 후 입력칸 비움
-                isChanged = true;
+                inputEl.value = '';
             }
         });
 
-        if (isChanged) {
-            localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
-            updateAdminDisplay();
-            calculate(); // 견적 계산 화면에 즉시 반영
-            alert('신규 단가가 반영되었습니다.');
-        } else {
-            alert('변경할 신규 단가를 입력해 주세요. (미입력 항목은 기존 단가가 유지됩니다.)');
-        }
+        activeEnabled = nextEnabled;
+        localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
+        localStorage.setItem('bluemoon_material_enabled', JSON.stringify(activeEnabled));
+
+        applyMaterialAvailability();
+        updateAdminDisplay();
+        calculate();
+        alert('재질 활성화 상태와 기준 단가가 반영되었습니다.');
     }
 
-    function resetDefaultPrices() {
-        if (confirm('모든 재질 단가를 초기 기본값으로 되돌리시겠습니까?')) {
+    function resetDefaultSettings() {
+        if (confirm('모든 재질의 활성화 상태와 기준 단가를 초기 기본값으로 되돌리시겠습니까?')) {
             activePrices = { ...DEFAULT_PRICES };
+            activeEnabled = { ...DEFAULT_ENABLED };
             localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
-            ['acrylic', 'pc', 'foamex', 'pcroll'].forEach(key => {
+            localStorage.setItem('bluemoon_material_enabled', JSON.stringify(activeEnabled));
+
+            MATERIAL_KEYS.forEach(key => {
                 document.getElementById('new_' + key).value = '';
             });
+
+            applyMaterialAvailability();
             updateAdminDisplay();
             calculate();
-            alert('초기 기본 단가로 복원되었습니다.');
+            alert('초기 기본값으로 복원되었습니다.');
         }
     }
 
-    // 페이지 로드 시 현재 단가 표시 초기화
+    // 페이지 로드 시 저장된 설정 적용
+    applyMaterialAvailability();
     updateAdminDisplay();
 </script>
 
