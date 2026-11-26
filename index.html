@@ -712,15 +712,15 @@
         </div>
     </div>
 
-    <!-- 2. 색상 → 가로/세로/두께 → 수량 입력 -->
+    <!-- 2. 색상(포맥스 전용) → 가로/세로/두께 → 수량 입력 -->
     <div class="card">
         <!-- 상단 네이버 주문화면 동일 입력 안내 -->
         <div class="order-sync-notice">
             네이버 주문화면에서 입력한 내용과 동일하게 입력해 주세요
         </div>
 
-        <!-- 2-1. 색상 선택 -->
-        <div class="input-group">
+        <!-- 2-1. 색상 선택 (포맥스 선택 시에만 표시) -->
+        <div class="input-group" id="colorSelectGroup" style="display: none;">
             <label class="field-label">색상 선택</label>
             <div id="colorOptionsContainer" class="option-grid-2"></div>
         </div>
@@ -746,7 +746,7 @@
             </div>
         </div>
 
-        <!-- 2-2B. PC롤 선택 입력: 칼라(상단) → 두께 → 가로 → 세로(두께 연동) -->
+        <!-- 2-2B. PC롤 선택 입력: 두께 → 가로 → 세로(두께 연동) -->
         <div id="pcrollInputs" style="display: none;">
             <div class="input-group">
                 <label class="field-label">두께 선택 (2t, 3t, 4.5t)</label>
@@ -1135,15 +1135,23 @@
     function onMaterialChange() {
         const mat = getCurrentMaterial();
         const cfg = MATERIAL_CONFIG[mat];
+        const colorGroupEl = document.getElementById('colorSelectGroup');
 
-        // 1) 색상 선택 항목 렌더링
-        renderRadioOptions(
-            'colorOptionsContainer',
-            'colorOption',
-            cfg.colors,
-            cfg.defaultColor,
-            'calculate()'
-        );
+        // 1) 색상 선택 항목 렌더링: 포맥스 선택 시에만 표시 (아크릴, PC, PC롤은 숨김)
+        if (mat === 'foamex') {
+            if (colorGroupEl) colorGroupEl.style.display = 'block';
+            renderRadioOptions(
+                'colorOptionsContainer',
+                'colorOption',
+                cfg.colors,
+                cfg.defaultColor,
+                'calculate()'
+            );
+        } else {
+            if (colorGroupEl) colorGroupEl.style.display = 'none';
+            const colorContainer = document.getElementById('colorOptionsContainer');
+            if (colorContainer) colorContainer.innerHTML = '';
+        }
 
         // 2) 재질별 입력 폼 전환
         const customDimEl = document.getElementById('customDimInputs');
@@ -1369,7 +1377,9 @@
 
     function calculate() {
         const matType = getCurrentMaterial();
-        const selectedColor = getSelectedRadioValue('colorOption') || '모든 칼라';
+        const selectedColor = (matType === 'foamex')
+            ? (getSelectedRadioValue('colorOption') || '백색')
+            : null;
 
         let quantity = parseInt(document.getElementById('quantity').value);
         if (isNaN(quantity) || quantity < 1) {
@@ -1386,7 +1396,9 @@
 
             if (width === 0 || height === 0 || thickness === 0 || !isAllowedThickness(matType, thickness)) {
                 document.getElementById('result').innerText = '0';
-                document.getElementById('unitPriceText').innerText = `개당 단가: 0원 (${selectedColor})`;
+                document.getElementById('unitPriceText').innerText = selectedColor
+                    ? `개당 단가: 0원 · 색상: ${selectedColor}`
+                    : '개당 단가: 0원';
                 document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
                 currentOrderCount = 0;
                 return;
@@ -1400,13 +1412,15 @@
             const rawValue = ((width * height * thickness * density) / 1000000 * kgPrice) + 500;
             const ceilingValue = Math.ceil(rawValue / 200) * 200;
             unitPrice = Math.max(1000, ceilingValue);
-            detailText = `개당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`;
+            detailText = selectedColor
+                ? `개당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`
+                : `개당 단가: ${unitPrice.toLocaleString()}원`;
 
         } else if (matType === 'pcroll') {
             const t = parseFloat(getSelectedRadioValue('pcrollThickness') || '2');
             if (!isAllowedThickness('pcroll', t)) {
                 document.getElementById('result').innerText = '0';
-                document.getElementById('unitPriceText').innerText = `롤당 단가: 0원 (${selectedColor})`;
+                document.getElementById('unitPriceText').innerText = '롤당 단가: 0원';
                 document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
                 currentOrderCount = 0;
                 return;
@@ -1419,7 +1433,7 @@
 
             const weightKg = (w * h * t * density) / 1000000;
             unitPrice = Math.round(weightKg * kgRate);
-            detailText = `롤당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`;
+            detailText = `롤당 단가: ${unitPrice.toLocaleString()}원`;
         }
 
         if (unitPrice <= 0) {
