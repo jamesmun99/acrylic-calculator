@@ -73,34 +73,16 @@
             display: block;
         }
 
-        /* 4가지 재질 그리드 배치 */
+        /* 재질 그리드 배치 */
         .radio-group {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-        }
-
-        .option-grid-1 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
         }
 
         .option-grid-2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .option-grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .option-grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
 
@@ -664,9 +646,7 @@
             }
 
             .radio-group,
-            .option-grid-2,
-            .option-grid-3,
-            .option-grid-4 {
+            .option-grid-2 {
                 grid-template-columns: 1fr;
             }
 
@@ -706,9 +686,6 @@
             <label class="radio-label" id="label_foamex">
                 <input type="radio" name="material" value="foamex" onchange="onMaterialChange()"> 포맥스 <span class="disabled-tag" id="tag_foamex" style="display: none;">(준비중)</span>
             </label>
-            <label class="radio-label" id="label_pcroll">
-                <input type="radio" name="material" value="pcroll" onchange="onMaterialChange()"> PC롤 <span class="disabled-tag" id="tag_pcroll" style="display: none;">(준비중)</span>
-            </label>
         </div>
     </div>
 
@@ -725,7 +702,7 @@
             <div id="colorOptionsContainer" class="option-grid-2"></div>
         </div>
 
-        <!-- 2-2A. 아크릴 / PC / 포맥스 맞춤 치수 입력 -->
+        <!-- 2-2. 아크릴 / PC / 포맥스 맞춤 치수 입력 -->
         <div id="customDimInputs">
             <div class="input-group">
                 <label class="field-label" for="width">가로 (mm) - 60mm ~ 1,200mm</label>
@@ -743,25 +720,6 @@
                 <label class="field-label" id="thicknessFieldLabel" for="thickness">두께 (mm) - 2, 3, 4, 5, 10t</label>
                 <input type="number" step="0.5" id="thickness" placeholder="두께 입력 (2, 3, 4, 5, 10)" oninput="validateThickness(false)" onblur="validateThickness(true)" onkeydown="blurOnEnter(event)">
                 <div class="error-msg" id="thicknessError">⚠️ 해당 두께만 입력 가능합니다.</div>
-            </div>
-        </div>
-
-        <!-- 2-2B. PC롤 선택 입력: 두께 → 가로 → 세로(두께 연동) -->
-        <div id="pcrollInputs" style="display: none;">
-            <div class="input-group">
-                <label class="field-label">두께 선택 (2t, 3t, 4.5t)</label>
-                <div id="pcrollThicknessContainer" class="option-grid-3"></div>
-                <div class="error-msg" id="pcrollThicknessError">⚠️ PC롤은 2t, 3t, 4.5t 두께만 선택 가능합니다.</div>
-            </div>
-
-            <div class="input-group">
-                <label class="field-label">가로 선택 (mm)</label>
-                <div id="pcrollWidthContainer" class="option-grid-4"></div>
-            </div>
-
-            <div class="input-group">
-                <label class="field-label">세로 선택 (mm)</label>
-                <div id="pcrollHeightContainer" class="option-grid-1"></div>
             </div>
         </div>
 
@@ -836,17 +794,6 @@
             <input type="number" step="0.01" class="admin-input" id="new_foamex_density" placeholder="비중(미입력시 유지)">
         </div>
 
-        <div class="admin-row">
-            <div class="admin-mat-name">PC롤<span class="admin-mat-unit">kg당 중량단가 (원) · 비중 1.2</span></div>
-            <label class="switch-control" id="toggle_wrap_pcroll">
-                <input type="checkbox" id="enable_pcroll" checked onchange="syncToggleLabel('pcroll')">
-                <span class="switch-slider"></span>
-                <span class="switch-status-text" id="enable_text_pcroll">활성</span>
-            </label>
-            <div class="current-val-badge" id="cur_pcroll">6,000원</div>
-            <input type="number" class="admin-input" id="new_pcroll" placeholder="미입력시 유지">
-        </div>
-
         <!-- 포맥스 두께 · 색상별 중량단가 관리 -->
         <div class="admin-sub-title">🎨 포맥스 두께 · 색상별 중량단가 (원/kg)</div>
         <div class="admin-foamex-row admin-row-header">
@@ -893,7 +840,7 @@
 
 <script>
     let currentOrderCount = 0;
-    const MATERIAL_KEYS = ['acrylic', 'pc', 'foamex', 'pcroll'];
+    const MATERIAL_KEYS = ['acrylic', 'pc', 'foamex'];
     const FOAMEX_THICKNESS_LIST = [1, 2, 3, 5, 8, 10];
     const FOAMEX_COLORS = ['백색', '칼라'];
     const MIN_DIM_MM = 60;
@@ -903,28 +850,25 @@
     const ALLOWED_THICKNESS = {
         acrylic: [2, 3, 4, 5, 10],
         pc: [2, 3, 4, 5, 10],
-        foamex: [1, 2, 3, 5, 8, 10],
-        pcroll: [2, 3, 4.5]
+        foamex: [1, 2, 3, 5, 8, 10]
     };
 
-    // 재질별 기본 비중 설정 (아크릴 1.19 / PC 1.2 / PC롤 1.2 / 포맥스 0.55)
+    // 재질별 기본 비중 설정 (아크릴 1.19 / PC 1.2 / 포맥스 0.55)
     const DEFAULT_DENSITY = {
         acrylic: 1.19,
         pc: 1.2,
-        foamex: 0.55,
-        pcroll: 1.2
+        foamex: 0.55
     };
 
     // SHA-256 해시 인증용 솔트 및 해시값
     const ADMIN_SALT = "bluemoon_express_2026_";
     const ADMIN_PW_HASH = "bc06d858fc7bfb80de6adb209d32df7615edc51ad067c506349b30a4e5b3f70c";
 
-    // 기본 단가 설정 (PC롤 중량단가 6,000원/kg)
+    // 기본 단가 설정
     const DEFAULT_PRICES = {
         acrylic: 12000,   // kg당
         pc: 16000,        // kg당
-        foamex: 3500,     // 기본 참고값
-        pcroll: 6000      // kg당 중량단가 (6,000원)
+        foamex: 3500      // 기본 참고값
     };
 
     // 알파폼 공급단가표 기준 두께·색상별 중량단가 (원/kg)
@@ -951,8 +895,7 @@
     const DEFAULT_ENABLED = {
         acrylic: true,
         pc: true,
-        foamex: true,
-        pcroll: true
+        foamex: true
     };
 
     // 재질별 옵션 구성
@@ -968,14 +911,6 @@
         foamex: {
             colors: ['백색', '칼라'],
             defaultColor: '백색'
-        },
-        pcroll: {
-            colors: ['모든 칼라'],
-            defaultColor: '모든 칼라',
-            thicknesses: [2, 3, 4.5],
-            defaultThickness: 2,
-            widths: [1000, 1200, 1220, 1500],
-            defaultWidth: 1000
         }
     };
 
@@ -1031,9 +966,6 @@
         if (mat === 'foamex') {
             return '⚠️ 포맥스는 1t, 2t, 3t, 5t, 8t, 10t 두께만 입력 가능합니다.';
         }
-        if (mat === 'pcroll') {
-            return '⚠️ PC롤은 2t, 3t, 4.5t 두께만 선택 가능합니다.';
-        }
         return '⚠️ 아크릴·PC는 2t, 3t, 4t, 5t, 10t 두께만 입력 가능합니다.';
     }
 
@@ -1078,10 +1010,6 @@
         return MATERIAL_KEYS.find(k => activeEnabled[k]) || 'acrylic';
     }
 
-    function isCustomSheetMaterial(mat) {
-        return mat === 'acrylic' || mat === 'pc' || mat === 'foamex';
-    }
-
     function updateThicknessFieldHint(mat) {
         const labelEl = document.getElementById('thicknessFieldLabel');
         const inputEl = document.getElementById('thickness');
@@ -1097,39 +1025,10 @@
     }
 
     function clearCustomDimErrors() {
-        ['widthError', 'heightError', 'thicknessError', 'pcrollThicknessError'].forEach(id => {
+        ['widthError', 'heightError', 'thicknessError'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = 'none';
         });
-    }
-
-    // PC롤 두께(2t, 3t -> 30000mm / 4.5t -> 20000mm)에 따른 세로(길이) 옵션 갱신
-    function updatePcrollHeightByThickness() {
-        const thickVal = parseFloat(getSelectedRadioValue('pcrollThickness') || '2');
-        const errEl = document.getElementById('pcrollThicknessError');
-        if (!isAllowedThickness('pcroll', thickVal)) {
-            if (errEl) {
-                errEl.innerText = getThicknessErrorMessage('pcroll');
-                errEl.style.display = 'block';
-            }
-        } else if (errEl) {
-            errEl.style.display = 'none';
-        }
-
-        const heights = (thickVal === 4.5) ? [20000] : [30000];
-        renderRadioOptions(
-            'pcrollHeightContainer',
-            'pcrollHeight',
-            heights,
-            heights[0],
-            'calculate()',
-            v => `${Number(v).toLocaleString()} mm`
-        );
-    }
-
-    function onPcrollThicknessChange() {
-        updatePcrollHeightByThickness();
-        calculate();
     }
 
     function onMaterialChange() {
@@ -1137,7 +1036,7 @@
         const cfg = MATERIAL_CONFIG[mat];
         const colorGroupEl = document.getElementById('colorSelectGroup');
 
-        // 1) 색상 선택 항목 렌더링: 포맥스 선택 시에만 표시 (아크릴, PC, PC롤은 숨김)
+        // 1) 색상 선택 항목 렌더링: 포맥스 선택 시에만 표시
         if (mat === 'foamex') {
             if (colorGroupEl) colorGroupEl.style.display = 'block';
             renderRadioOptions(
@@ -1153,58 +1052,28 @@
             if (colorContainer) colorContainer.innerHTML = '';
         }
 
-        // 2) 재질별 입력 폼 전환
-        const customDimEl = document.getElementById('customDimInputs');
-        const pcrollEl = document.getElementById('pcrollInputs');
-
-        customDimEl.style.display = 'none';
-        pcrollEl.style.display = 'none';
+        // 2) 치수 입력 폼 갱신
         clearCustomDimErrors();
+        updateThicknessFieldHint(mat);
 
-        if (isCustomSheetMaterial(mat)) {
-            customDimEl.style.display = 'block';
-            updateThicknessFieldHint(mat);
+        ['width', 'height'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.value !== '' && parseFloat(el.value) > MAX_DIM_MM) {
+                el.value = MAX_DIM_MM;
+            }
+        });
 
-            // 기존 입력값이 1200mm를 초과한 경우 즉시 한도 보정
-            ['width', 'height'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el && el.value !== '' && parseFloat(el.value) > MAX_DIM_MM) {
-                    el.value = MAX_DIM_MM;
-                }
-            });
-
-            // 재질 전환 시 기존 입력 두께가 해당 재질 허용 두께가 아니면 안내 표시 및 비움
-            const thickEl = document.getElementById('thickness');
-            const thickErrEl = document.getElementById('thicknessError');
-            if (thickEl && thickEl.value !== '') {
-                const tVal = parseFloat(thickEl.value);
-                if (!isAllowedThickness(mat, tVal)) {
-                    thickEl.value = '';
-                    if (thickErrEl) {
-                        thickErrEl.innerText = getThicknessErrorMessage(mat);
-                        thickErrEl.style.display = 'block';
-                    }
+        const thickEl = document.getElementById('thickness');
+        const thickErrEl = document.getElementById('thicknessError');
+        if (thickEl && thickEl.value !== '') {
+            const tVal = parseFloat(thickEl.value);
+            if (!isAllowedThickness(mat, tVal)) {
+                thickEl.value = '';
+                if (thickErrEl) {
+                    thickErrEl.innerText = getThicknessErrorMessage(mat);
+                    thickErrEl.style.display = 'block';
                 }
             }
-        } else if (mat === 'pcroll') {
-            pcrollEl.style.display = 'block';
-            renderRadioOptions(
-                'pcrollThicknessContainer',
-                'pcrollThickness',
-                cfg.thicknesses,
-                cfg.defaultThickness,
-                'onPcrollThicknessChange()',
-                v => `${v}t (${v}mm)`
-            );
-            renderRadioOptions(
-                'pcrollWidthContainer',
-                'pcrollWidth',
-                cfg.widths,
-                cfg.defaultWidth,
-                'calculate()',
-                v => `${v} mm`
-            );
-            updatePcrollHeightByThickness();
         }
 
         calculate();
@@ -1234,16 +1103,9 @@
     });
 
     function validateAndCalculate(inputId, errorId, minLimit, maxLimit) {
-        const mat = getCurrentMaterial();
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
 
-        if (!isCustomSheetMaterial(mat)) {
-            errorEl.style.display = 'none';
-            calculate();
-            return;
-        }
-        
         if (inputEl.value === "") {
             errorEl.style.display = 'none';
             calculate();
@@ -1264,14 +1126,8 @@
     }
 
     function checkMinLimit(inputId, errorId, minLimit) {
-        const mat = getCurrentMaterial();
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
-
-        if (!isCustomSheetMaterial(mat)) {
-            errorEl.style.display = 'none';
-            return;
-        }
 
         if (inputEl.value === "") return;
 
@@ -1290,12 +1146,6 @@
         const inputEl = document.getElementById('thickness');
         const errorEl = document.getElementById('thicknessError');
 
-        if (!isCustomSheetMaterial(mat)) {
-            errorEl.style.display = 'none';
-            calculate();
-            return;
-        }
-
         const rawStr = inputEl.value.trim();
         if (rawStr === "") {
             errorEl.style.display = 'none';
@@ -1307,7 +1157,6 @@
         const allowedList = ALLOWED_THICKNESS[mat] || [];
         const maxAllowed = Math.max(...allowedList);
 
-        // 최대 두께 초과 시 즉시 차단 및 경고 표시
         if (val > maxAllowed) {
             inputEl.value = '';
             errorEl.innerText = getThicknessErrorMessage(mat);
@@ -1316,7 +1165,6 @@
             return;
         }
 
-        // '10' 입력을 위해 '1'을 먼저 타이핑하는 중간 상태(아크릴·PC)는 블러 전까지 대기
         const couldBePrefix = !isBlur && allowedList.some(a => String(a).startsWith(rawStr) && String(a) !== rawStr);
 
         if (isAllowedThickness(mat, val)) {
@@ -1386,63 +1234,31 @@
             quantity = 1;
         }
 
-        let unitPrice = 0;
-        let detailText = '';
+        const width = parseFloat(document.getElementById('width').value) || 0;
+        const height = parseFloat(document.getElementById('height').value) || 0;
+        const thickness = parseFloat(document.getElementById('thickness').value) || 0;
 
-        if (isCustomSheetMaterial(matType)) {
-            const width = parseFloat(document.getElementById('width').value) || 0;
-            const height = parseFloat(document.getElementById('height').value) || 0;
-            const thickness = parseFloat(document.getElementById('thickness').value) || 0;
-
-            if (width === 0 || height === 0 || thickness === 0 || !isAllowedThickness(matType, thickness)) {
-                document.getElementById('result').innerText = '0';
-                document.getElementById('unitPriceText').innerText = selectedColor
-                    ? `개당 단가: 0원 · 색상: ${selectedColor}`
-                    : '개당 단가: 0원';
-                document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
-                currentOrderCount = 0;
-                return;
-            }
-
-            const density = getDensity(matType);
-            const kgPrice = (matType === 'foamex')
-                ? getFoamexRate(selectedColor, thickness)
-                : activePrices[matType];
-
-            const rawValue = ((width * height * thickness * density) / 1000000 * kgPrice) + 500;
-            const ceilingValue = Math.ceil(rawValue / 200) * 200;
-            unitPrice = Math.max(1000, ceilingValue);
-            detailText = selectedColor
-                ? `개당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`
-                : `개당 단가: ${unitPrice.toLocaleString()}원`;
-
-        } else if (matType === 'pcroll') {
-            const t = parseFloat(getSelectedRadioValue('pcrollThickness') || '2');
-            if (!isAllowedThickness('pcroll', t)) {
-                document.getElementById('result').innerText = '0';
-                document.getElementById('unitPriceText').innerText = '롤당 단가: 0원';
-                document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
-                currentOrderCount = 0;
-                return;
-            }
-            const w = parseFloat(getSelectedRadioValue('pcrollWidth') || '1000');
-            const defaultH = (t === 4.5) ? 20000 : 30000;
-            const h = parseFloat(getSelectedRadioValue('pcrollHeight') || String(defaultH));
-            const kgRate = activePrices.pcroll || 6000;
-            const density = getDensity('pcroll');
-
-            const weightKg = (w * h * t * density) / 1000000;
-            unitPrice = Math.round(weightKg * kgRate);
-            detailText = `롤당 단가: ${unitPrice.toLocaleString()}원`;
-        }
-
-        if (unitPrice <= 0) {
+        if (width === 0 || height === 0 || thickness === 0 || !isAllowedThickness(matType, thickness)) {
             document.getElementById('result').innerText = '0';
-            document.getElementById('unitPriceText').innerText = detailText || '개당 단가: 0원';
+            document.getElementById('unitPriceText').innerText = selectedColor
+                ? `개당 단가: 0원 · 색상: ${selectedColor}`
+                : '개당 단가: 0원';
             document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
             currentOrderCount = 0;
             return;
         }
+
+        const density = getDensity(matType);
+        const kgPrice = (matType === 'foamex')
+            ? getFoamexRate(selectedColor, thickness)
+            : activePrices[matType];
+
+        const rawValue = ((width * height * thickness * density) / 1000000 * kgPrice) + 500;
+        const ceilingValue = Math.ceil(rawValue / 200) * 200;
+        const unitPrice = Math.max(1000, ceilingValue);
+        const detailText = selectedColor
+            ? `개당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`
+            : `개당 단가: ${unitPrice.toLocaleString()}원`;
 
         const totalPrice = unitPrice * quantity;
         currentOrderCount = Math.round(totalPrice / 100);
@@ -1645,7 +1461,7 @@
             return;
         }
 
-        ['acrylic', 'pc', 'pcroll'].forEach(key => {
+        ['acrylic', 'pc'].forEach(key => {
             const inputEl = document.getElementById('new_' + key);
             const val = parseFloat(inputEl.value);
             if (!isNaN(val) && val > 0) {
@@ -1698,7 +1514,7 @@
             localStorage.setItem('bluemoon_foamex_rates', JSON.stringify(activeFoamexRates));
             localStorage.setItem('bluemoon_material_enabled', JSON.stringify(activeEnabled));
 
-            ['acrylic', 'pc', 'pcroll'].forEach(key => {
+            ['acrylic', 'pc'].forEach(key => {
                 document.getElementById('new_' + key).value = '';
             });
             document.getElementById('new_foamex_density').value = '';
