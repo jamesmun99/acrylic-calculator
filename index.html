@@ -717,3 +717,844 @@
             </label>
         </div>
     </div>
+
+    <!-- 2. 색상 및 치수/규격/두께/수량 입력 -->
+    <div class="card">
+        <!-- 색상 선택 (재질별 동적 구성, 단일 항목은 자동 디폴트 선택 / 포맥스는 백색 디폴트) -->
+        <div class="input-group">
+            <label class="field-label">색상 선택</label>
+            <div id="colorOptionsContainer" class="option-grid-2"></div>
+        </div>
+
+        <!-- 아크릴 / PC 맞춤 치수 입력 (아크릴·PC 선택 시에만 치수 한도 규칙 적용) -->
+        <div id="customDimInputs">
+            <div class="scope-notice-box">
+                📏 <strong>아크릴 · PC 맞춤 재단 전용 입력</strong> (가로·세로 60~1,500mm / 두께 최대 10mm 한도 적용)
+            </div>
+
+            <div class="input-group">
+                <label class="field-label" for="width">가로 (mm) - 60mm ~ 1,500mm <span class="mat-scope-badge">아크릴·PC 전용</span></label>
+                <input type="number" id="width" placeholder="[아크릴·PC 전용] 가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onblur="checkMinLimit('width', 'widthError', 60)" onkeydown="blurOnEnter(event)">
+                <div class="error-msg" id="widthError">⚠️ 아크릴·PC 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
+            </div>
+
+            <div class="input-group">
+                <label class="field-label" for="height">세로 (mm) - 60mm ~ 1,500mm <span class="mat-scope-badge">아크릴·PC 전용</span></label>
+                <input type="number" id="height" placeholder="[아크릴·PC 전용] 세로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
+                <div class="error-msg" id="heightError">⚠️ 아크릴·PC 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
+            </div>
+
+            <div class="input-group">
+                <label class="field-label" for="thickness">두께 (mm) - 최대 10mm <span class="mat-scope-badge">아크릴·PC 전용</span></label>
+                <input type="number" id="thickness" placeholder="[아크릴·PC 전용] 두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
+                <div class="error-msg" id="thicknessError">⚠️ 아크릴·PC 최대 입력 가능 두께는 10mm입니다.</div>
+            </div>
+        </div>
+
+        <!-- 포맥스(알파폼) 네이버판가 선택 입력 -->
+        <div id="foamexInputs" style="display: none;">
+            <div class="input-group">
+                <label class="field-label">규격 (가로 × 세로 mm)</label>
+                <div id="foamexSizeContainer" class="option-grid-2"></div>
+            </div>
+
+            <div class="input-group">
+                <label class="field-label">두께 선택</label>
+                <div id="foamexThicknessContainer" class="option-grid-3"></div>
+                <div class="naver-price-badge" id="foamexNaverPriceInfo">네이버판가 기준: -</div>
+            </div>
+        </div>
+
+        <!-- PC롤 선택 입력 (가로 1000,1200,1220,1500 / 세로 30000,20000 / 두께 2t,3t,4.5t / 중량단가 6,000원) -->
+        <div id="pcrollInputs" style="display: none;">
+            <div class="input-group">
+                <label class="field-label">가로 선택 (mm)</label>
+                <div id="pcrollWidthContainer" class="option-grid-4"></div>
+            </div>
+
+            <div class="input-group">
+                <label class="field-label">세로 선택 (mm)</label>
+                <div id="pcrollHeightContainer" class="option-grid-2"></div>
+            </div>
+
+            <div class="input-group">
+                <label class="field-label">두께 선택</label>
+                <div id="pcrollThicknessContainer" class="option-grid-3"></div>
+                <div class="sub-note" id="pcrollWeightInfo">중량단가 6,000원/kg 적용 (비중 1.19)</div>
+            </div>
+        </div>
+
+        <!-- 수량 입력 -->
+        <div class="input-group">
+            <label class="field-label" for="quantity">수량 (개)</label>
+            <input type="number" id="quantity" value="1" min="1" placeholder="수량 입력" oninput="validateQuantity(false)" onblur="validateQuantity(true)" onkeydown="blurOnEnter(event)">
+        </div>
+    </div>
+
+    <!-- 3. 견적 결과 -->
+    <div class="card result-box">
+        <div class="result-label">총 견적 금액</div>
+        <div class="result-value"><span id="result">0</span> 원</div>
+        <div class="unit-price" id="unitPriceText">개당 단가: 0원</div>
+        
+        <div class="order-guide-wrap">
+            <div class="order-guide" id="orderGuideText">네이버 주문 수량: 0개 지정</div>
+            <button type="button" class="copy-btn" onclick="copyOrderCount()">수량 복사하기</button>
+        </div>
+    </div>
+
+    <!-- 구석 관리자 로그인 버튼 -->
+    <div class="admin-footer">
+        <button type="button" class="admin-trigger" onclick="openAdminLogin()">블루문특급</button>
+    </div>
+
+    <!-- 관리자 설정 패널 (비밀번호 인증 후 표시) -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <span class="admin-title">⚙️ 재질 활성화 및 기준 단가 설정</span>
+            <button type="button" class="admin-close" onclick="closeAdminPanel()">닫기</button>
+        </div>
+
+        <div class="admin-row admin-row-header">
+            <div>재질 (기준)</div>
+            <div style="text-align: center;">활성화 여부</div>
+            <div style="text-align: right;">현재 반영값</div>
+            <div style="text-align: right;">신규 단가 입력</div>
+        </div>
+
+        <div class="admin-row">
+            <div class="admin-mat-name">아크릴<span class="admin-mat-unit">kg당 단가 (원)</span></div>
+            <label class="switch-control" id="toggle_wrap_acrylic">
+                <input type="checkbox" id="enable_acrylic" checked onchange="syncToggleLabel('acrylic')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_acrylic">활성</span>
+            </label>
+            <div class="current-val-badge" id="cur_acrylic">12,000원</div>
+            <input type="number" class="admin-input" id="new_acrylic" placeholder="미입력시 유지">
+        </div>
+
+        <div class="admin-row">
+            <div class="admin-mat-name">PC<span class="admin-mat-unit">kg당 단가 (원)</span></div>
+            <label class="switch-control" id="toggle_wrap_pc">
+                <input type="checkbox" id="enable_pc" checked onchange="syncToggleLabel('pc')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_pc">활성</span>
+            </label>
+            <div class="current-val-badge" id="cur_pc">16,000원</div>
+            <input type="number" class="admin-input" id="new_pc" placeholder="미입력시 유지">
+        </div>
+
+        <div class="admin-row">
+            <div class="admin-mat-name">포맥스<span class="admin-mat-unit">네이버판가표 적용</span></div>
+            <label class="switch-control" id="toggle_wrap_foamex">
+                <input type="checkbox" id="enable_foamex" checked onchange="syncToggleLabel('foamex')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_foamex">활성</span>
+            </label>
+            <div class="current-val-badge" id="cur_foamex">네이버판가</div>
+            <input type="number" class="admin-input" id="new_foamex" placeholder="네이버판가 사용" disabled>
+        </div>
+
+        <div class="admin-row">
+            <div class="admin-mat-name">PC롤<span class="admin-mat-unit">kg당 중량단가 (원)</span></div>
+            <label class="switch-control" id="toggle_wrap_pcroll">
+                <input type="checkbox" id="enable_pcroll" checked onchange="syncToggleLabel('pcroll')">
+                <span class="switch-slider"></span>
+                <span class="switch-status-text" id="enable_text_pcroll">활성</span>
+            </label>
+            <div class="current-val-badge" id="cur_pcroll">6,000원</div>
+            <input type="number" class="admin-input" id="new_pcroll" placeholder="미입력시 유지">
+        </div>
+
+        <div class="admin-actions">
+            <button type="button" class="admin-save-btn" onclick="saveAdminSettings()">설정 저장 및 반영</button>
+            <button type="button" class="admin-reset-btn" onclick="resetDefaultSettings()">기본값 복원</button>
+        </div>
+    </div>
+</div>
+
+<!-- 관리자 비밀번호 입력 모달 (기본 * 마스킹 + 눈 모양 아이콘 보기 토글) -->
+<div class="pw-modal-backdrop" id="pwModal" onclick="handleModalBackdropClick(event)">
+    <div class="pw-modal-box" role="dialog" aria-modal="true" aria-labelledby="pwModalTitle">
+        <div class="pw-modal-title" id="pwModalTitle">관리자 인증</div>
+        <div class="pw-modal-desc">관리자 비밀번호를 입력하세요.</div>
+        <div class="pw-input-wrap">
+            <input type="password" id="adminPwInput" placeholder="비밀번호 입력" autocomplete="off" onkeydown="handlePwKeydown(event)">
+            <button type="button" class="pw-eye-btn" id="pwEyeBtn" onclick="toggleAdminPwVisibility()" aria-label="비밀번호 표시 전환" title="비밀번호 보기/숨기기">
+                <svg id="eyeIconShow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg id="eyeIconHide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="pw-modal-error" id="pwModalError">⚠️ 비밀번호가 일치하지 않습니다.</div>
+        <div class="pw-modal-actions">
+            <button type="button" class="pw-confirm-btn" onclick="submitAdminLogin()">확인</button>
+            <button type="button" class="pw-cancel-btn" onclick="closePwModal()">취소</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentOrderCount = 0;
+    const MATERIAL_KEYS = ['acrylic', 'pc', 'foamex', 'pcroll'];
+
+    // SHA-256 해시 인증용 솔트 및 해시값
+    const ADMIN_SALT = "bluemoon_express_2026_";
+    const ADMIN_PW_HASH = "bc06d858fc7bfb80de6adb209d32df7615edc51ad067c506349b30a4e5b3f70c";
+
+    // 기본 단가 설정 (PC롤 중량단가 6,000원/kg)
+    const DEFAULT_PRICES = {
+        acrylic: 12000,   // kg당
+        pc: 16000,        // kg당
+        foamex: 35000,    // 네이버판가표 사용
+        pcroll: 6000      // kg당 중량단가 (6,000원)
+    };
+
+    // 기본 재질 활성화 설정
+    const DEFAULT_ENABLED = {
+        acrylic: true,
+        pc: true,
+        foamex: true,
+        pcroll: true
+    };
+
+    // 알파폼_공급단가표_260401.xlsx '네이버판가' 시트 데이터
+    const FOAMEX_NAVER_PRICES = [
+        { thickness: 1, colorSheet: '백색', size: '910 X 1820', supply: 5280, vat: 5808 },
+        { thickness: 1, colorSheet: '백색', size: '1220 X 2440', supply: 9120, vat: 10032 },
+        { thickness: 2, colorSheet: '백색', size: '910 X 1820', supply: 7200, vat: 7920 },
+        { thickness: 2, colorSheet: '백색', size: '1220 X 2440', supply: 12600, vat: 13860 },
+        { thickness: 3, colorSheet: '백색', size: '910 X 1820', supply: 10680, vat: 11748 },
+        { thickness: 3, colorSheet: '백색', size: '1220 X 2440', supply: 18720, vat: 20592 },
+        { thickness: 5, colorSheet: '백색', size: '910 X 1820', supply: 17640, vat: 19404 },
+        { thickness: 5, colorSheet: '백색', size: '1220 X 2440', supply: 31200, vat: 34320 },
+        { thickness: 8, colorSheet: '백색', size: '910 X 1820', supply: 28200, vat: 31020 },
+        { thickness: 8, colorSheet: '백색', size: '1220 X 2440', supply: 49920, vat: 54912 },
+        { thickness: 10, colorSheet: '백색', size: '910 X 1820', supply: 35280, vat: 38808 },
+        { thickness: 10, colorSheet: '백색', size: '1220 X 2440', supply: 62280, vat: 68508 },
+
+        { thickness: 1, colorSheet: '컬러', size: '910 X 1820', supply: 6240, vat: 6864 },
+        { thickness: 1, colorSheet: '컬러', size: '1220 X 2440', supply: 10800, vat: 11880 },
+        { thickness: 2, colorSheet: '컬러', size: '910 X 1820', supply: 8520, vat: 9372 },
+        { thickness: 2, colorSheet: '컬러', size: '1220 X 2440', supply: 15000, vat: 16500 },
+        { thickness: 3, colorSheet: '컬러', size: '910 X 1820', supply: 14040, vat: 15444 },
+        { thickness: 3, colorSheet: '컬러', size: '1220 X 2440', supply: 23640, vat: 26004 },
+        { thickness: 5, colorSheet: '컬러', size: '910 X 1820', supply: 20880, vat: 22968 },
+        { thickness: 5, colorSheet: '컬러', size: '1220 X 2440', supply: 36840, vat: 40524 },
+        { thickness: 8, colorSheet: '컬러', size: '910 X 1820', supply: 33360, vat: 36696 },
+        { thickness: 8, colorSheet: '컬러', size: '1220 X 2440', supply: 58920, vat: 64812 },
+        { thickness: 10, colorSheet: '컬러', size: '910 X 1820', supply: 41640, vat: 45804 },
+        { thickness: 10, colorSheet: '컬러', size: '1220 X 2440', supply: 73560, vat: 80916 }
+    ];
+
+    // 재질별 옵션 구성
+    const MATERIAL_CONFIG = {
+        acrylic: {
+            colors: ['모든 칼라'],
+            defaultColor: '모든 칼라'
+        },
+        pc: {
+            colors: ['모든 칼라'],
+            defaultColor: '모든 칼라'
+        },
+        foamex: {
+            colors: ['백색', '칼라'],
+            defaultColor: '백색',
+            sizes: ['910 X 1820', '1220 X 2440'],
+            defaultSize: '910 X 1820',
+            thicknesses: [1, 2, 3, 5, 8, 10],
+            defaultThickness: 2
+        },
+        pcroll: {
+            colors: ['모든 칼라'],
+            defaultColor: '모든 칼라',
+            widths: [1000, 1200, 1220, 1500],
+            defaultWidth: 1000,
+            heights: [30000, 20000],
+            defaultHeight: 30000,
+            thicknesses: [2, 3, 4.5],
+            defaultThickness: 2
+        }
+    };
+
+    let activePrices = JSON.parse(localStorage.getItem('bluemoon_material_prices')) || { ...DEFAULT_PRICES };
+    let activeEnabled = Object.assign(
+        { ...DEFAULT_ENABLED },
+        JSON.parse(localStorage.getItem('bluemoon_material_enabled')) || {}
+    );
+
+    function blurOnEnter(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.target.blur();
+        }
+    }
+
+    // 한 개 선택항목만 있는 경우(또는 기본값 지정 시) 디폴트 선택 헬퍼
+    function renderRadioOptions(containerId, radioName, items, preferredValue, onChangeFn, formatLabelFn) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const defaultVal = (items.length === 1)
+            ? String(items[0])
+            : (preferredValue !== undefined && preferredValue !== null ? String(preferredValue) : String(items[0]));
+
+        container.innerHTML = '';
+        items.forEach(item => {
+            const valStr = String(item);
+            const checkedAttr = (valStr === defaultVal) ? 'checked' : '';
+            const labelText = formatLabelFn ? formatLabelFn(item) : valStr;
+
+            const lbl = document.createElement('label');
+            lbl.className = 'radio-label';
+            lbl.innerHTML = `<input type="radio" name="${radioName}" value="${valStr}" ${checkedAttr} onchange="${onChangeFn}"> ${labelText}`;
+            container.appendChild(lbl);
+        });
+    }
+
+    function getSelectedRadioValue(radioName) {
+        const el = document.querySelector(`input[name="${radioName}"]:checked`);
+        return el ? el.value : null;
+    }
+
+    function getCurrentMaterial() {
+        const selectedMaterial = document.querySelector('input[name="material"]:checked');
+        if (selectedMaterial && !selectedMaterial.disabled && activeEnabled[selectedMaterial.value]) {
+            return selectedMaterial.value;
+        }
+        return MATERIAL_KEYS.find(k => activeEnabled[k]) || 'acrylic';
+    }
+
+    // 아크릴 또는 PC 재질 여부 판별 (치수 한도 규칙 적용 대상)
+    function isAcrylicOrPc(mat) {
+        return mat === 'acrylic' || mat === 'pc';
+    }
+
+    function clearCustomDimErrors() {
+        ['widthError', 'heightError', 'thicknessError'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+    }
+
+    function onMaterialChange() {
+        const mat = getCurrentMaterial();
+        const cfg = MATERIAL_CONFIG[mat];
+
+        // 1) 색상 선택 항목 렌더링 (1개면 자동 디폴트, 포맥스는 '백색' 디폴트)
+        renderRadioOptions(
+            'colorOptionsContainer',
+            'colorOption',
+            cfg.colors,
+            cfg.defaultColor,
+            'calculate()'
+        );
+
+        // 2) 재질별 입력 폼 전환 및 옵션 기본 선택
+        const customDimEl = document.getElementById('customDimInputs');
+        const foamexEl = document.getElementById('foamexInputs');
+        const pcrollEl = document.getElementById('pcrollInputs');
+
+        customDimEl.style.display = 'none';
+        foamexEl.style.display = 'none';
+        pcrollEl.style.display = 'none';
+        clearCustomDimErrors();
+
+        if (isAcrylicOrPc(mat)) {
+            customDimEl.style.display = 'block';
+        } else if (mat === 'foamex') {
+            foamexEl.style.display = 'block';
+            renderRadioOptions(
+                'foamexSizeContainer',
+                'foamexSize',
+                cfg.sizes,
+                cfg.defaultSize,
+                'calculate()',
+                v => `${v} mm`
+            );
+            renderRadioOptions(
+                'foamexThicknessContainer',
+                'foamexThickness',
+                cfg.thicknesses,
+                cfg.defaultThickness,
+                'calculate()',
+                v => `${v}t (${v}mm)`
+            );
+        } else if (mat === 'pcroll') {
+            pcrollEl.style.display = 'block';
+            renderRadioOptions(
+                'pcrollWidthContainer',
+                'pcrollWidth',
+                cfg.widths,
+                cfg.defaultWidth,
+                'calculate()',
+                v => `${v} mm`
+            );
+            renderRadioOptions(
+                'pcrollHeightContainer',
+                'pcrollHeight',
+                cfg.heights,
+                cfg.defaultHeight,
+                'calculate()',
+                v => `${v} mm`
+            );
+            renderRadioOptions(
+                'pcrollThicknessContainer',
+                'pcrollThickness',
+                cfg.thicknesses,
+                cfg.defaultThickness,
+                'calculate()',
+                v => `${v}t (${v}mm)`
+            );
+        }
+
+        calculate();
+    }
+
+    // 소스 보기 및 개발자 도구 단축키 차단
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('pwModal');
+            if (modal && modal.classList.contains('is-open')) {
+                closePwModal();
+                return;
+            }
+        }
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // 아크릴과 PC를 선택할 때만 가로/세로 사이즈 한도 규칙 적용
+    function validateAndCalculate(inputId, errorId, minLimit, maxLimit) {
+        const mat = getCurrentMaterial();
+        const inputEl = document.getElementById(inputId);
+        const errorEl = document.getElementById(errorId);
+
+        if (!isAcrylicOrPc(mat)) {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
+        }
+        
+        if (inputEl.value === "") {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
+        }
+
+        const val = parseFloat(inputEl.value);
+
+        if (val > maxLimit) {
+            inputEl.value = maxLimit;
+            errorEl.innerText = `⚠️ 아크릴·PC 최대 입력 가능 길이는 ${maxLimit.toLocaleString()}mm입니다.`;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
+        }
+
+        calculate();
+    }
+
+    // 아크릴과 PC를 선택할 때만 최소 치수(60mm) 한도 규칙 적용
+    function checkMinLimit(inputId, errorId, minLimit) {
+        const mat = getCurrentMaterial();
+        const inputEl = document.getElementById(inputId);
+        const errorEl = document.getElementById(errorId);
+
+        if (!isAcrylicOrPc(mat)) {
+            errorEl.style.display = 'none';
+            return;
+        }
+
+        if (inputEl.value === "") return;
+
+        const val = parseFloat(inputEl.value);
+        if (val < minLimit) {
+            inputEl.value = minLimit;
+            errorEl.innerText = `⚠️ 아크릴·PC 최소 입력 가능 길이는 ${minLimit}mm입니다.`;
+            errorEl.style.display = 'block';
+            calculate();
+        }
+    }
+
+    // 아크릴과 PC를 선택할 때만 최대 두께(10mm) 한도 규칙 적용
+    function validateThickness() {
+        const mat = getCurrentMaterial();
+        const inputEl = document.getElementById('thickness');
+        const errorEl = document.getElementById('thicknessError');
+
+        if (!isAcrylicOrPc(mat)) {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
+        }
+
+        if (inputEl.value === "") {
+            errorEl.style.display = 'none';
+            calculate();
+            return;
+        }
+
+        const val = parseFloat(inputEl.value);
+
+        if (val > 10) {
+            inputEl.value = 10;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
+        }
+
+        calculate();
+    }
+
+    function validateQuantity(isBlur) {
+        const qtyEl = document.getElementById('quantity');
+        if (isBlur && (qtyEl.value === '' || parseInt(qtyEl.value) < 1)) {
+            qtyEl.value = 1;
+        }
+        calculate();
+    }
+
+    // 고객 화면의 재질 선택 버튼 활성/비활성 상태 반영
+    function applyMaterialAvailability() {
+        let firstAvailableRadio = null;
+
+        MATERIAL_KEYS.forEach(key => {
+            const isEnabled = !!activeEnabled[key];
+            const labelEl = document.getElementById('label_' + key);
+            const tagEl = document.getElementById('tag_' + key);
+            const radioEl = document.querySelector(`input[name="material"][value="${key}"]`);
+
+            if (!labelEl || !radioEl) return;
+
+            radioEl.disabled = !isEnabled;
+            if (isEnabled) {
+                labelEl.classList.remove('disabled');
+                labelEl.removeAttribute('aria-disabled');
+                if (tagEl) tagEl.style.display = 'none';
+                if (!firstAvailableRadio) firstAvailableRadio = radioEl;
+            } else {
+                labelEl.classList.add('disabled');
+                labelEl.setAttribute('aria-disabled', 'true');
+                if (tagEl) tagEl.style.display = 'inline';
+                if (radioEl.checked) {
+                    radioEl.checked = false;
+                }
+            }
+        });
+
+        const currentChecked = document.querySelector('input[name="material"]:checked');
+        if ((!currentChecked || currentChecked.disabled) && firstAvailableRadio) {
+            firstAvailableRadio.checked = true;
+        }
+    }
+
+    function calculate() {
+        const matType = getCurrentMaterial();
+        const selectedColor = getSelectedRadioValue('colorOption') || '모든 칼라';
+
+        let quantity = parseInt(document.getElementById('quantity').value);
+        if (isNaN(quantity) || quantity < 1) {
+            quantity = 1;
+        }
+
+        let unitPrice = 0;
+        let detailText = '';
+
+        if (isAcrylicOrPc(matType)) {
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const height = parseFloat(document.getElementById('height').value) || 0;
+            const thickness = parseFloat(document.getElementById('thickness').value) || 0;
+
+            if (width === 0 || height === 0 || thickness === 0) {
+                document.getElementById('result').innerText = '0';
+                document.getElementById('unitPriceText').innerText = `개당 단가: 0원 (${selectedColor})`;
+                document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
+                currentOrderCount = 0;
+                return;
+            }
+
+            const kgPrice = activePrices[matType];
+            const rawValue = ((width * height * thickness * 1.19) / 1000000 * kgPrice) + 500;
+            const ceilingValue = Math.ceil(rawValue / 200) * 200;
+            unitPrice = Math.max(1000, ceilingValue);
+            detailText = `개당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`;
+
+        } else if (matType === 'foamex') {
+            const sizeVal = getSelectedRadioValue('foamexSize') || '910 X 1820';
+            const thickVal = parseFloat(getSelectedRadioValue('foamexThickness') || '2');
+            const colorSheet = (selectedColor === '칼라') ? '컬러' : '백색';
+
+            const matched = FOAMEX_NAVER_PRICES.find(
+                row => row.thickness === thickVal && row.colorSheet === colorSheet && row.size === sizeVal
+            );
+
+            const priceInfoEl = document.getElementById('foamexNaverPriceInfo');
+            if (matched) {
+                unitPrice = matched.supply;
+                priceInfoEl.innerText = `네이버판가 (${selectedColor} · ${sizeVal} · ${thickVal}t): 공급가 ${matched.supply.toLocaleString()}원 / 부가세포함가 ${matched.vat.toLocaleString()}원`;
+                detailText = `장당 단가(네이버판가 공급가): ${unitPrice.toLocaleString()}원 (부가세포함 ${matched.vat.toLocaleString()}원) · 색상: ${selectedColor}`;
+            } else {
+                unitPrice = 0;
+                priceInfoEl.innerText = '네이버판가 기준: 해당 조합 데이터 없음';
+                detailText = `장당 단가: 0원 · 색상: ${selectedColor}`;
+            }
+
+        } else if (matType === 'pcroll') {
+            const w = parseFloat(getSelectedRadioValue('pcrollWidth') || '1000');
+            const h = parseFloat(getSelectedRadioValue('pcrollHeight') || '30000');
+            const t = parseFloat(getSelectedRadioValue('pcrollThickness') || '2');
+            const kgRate = activePrices.pcroll || 6000;
+
+            const weightKg = (w * h * t * 1.19) / 1000000;
+            unitPrice = Math.round(weightKg * kgRate);
+
+            const weightInfoEl = document.getElementById('pcrollWeightInfo');
+            weightInfoEl.innerText = `예상 중량: ${weightKg.toFixed(3)}kg × 중량단가 ${kgRate.toLocaleString()}원/kg = ${unitPrice.toLocaleString()}원/롤`;
+            detailText = `롤당 단가: ${unitPrice.toLocaleString()}원 (${weightKg.toFixed(3)}kg × ${kgRate.toLocaleString()}원) · 색상: ${selectedColor}`;
+        }
+
+        if (unitPrice <= 0) {
+            document.getElementById('result').innerText = '0';
+            document.getElementById('unitPriceText').innerText = detailText || '개당 단가: 0원';
+            document.getElementById('orderGuideText').innerText = '네이버 주문 수량: 0개 지정';
+            currentOrderCount = 0;
+            return;
+        }
+
+        const totalPrice = unitPrice * quantity;
+        currentOrderCount = Math.round(totalPrice / 100);
+
+        document.getElementById('result').innerText = totalPrice.toLocaleString();
+        document.getElementById('unitPriceText').innerText = detailText;
+        document.getElementById('orderGuideText').innerText = `네이버 주문 수량: ${currentOrderCount.toLocaleString()}개 지정`;
+    }
+
+    function copyOrderCount() {
+        if (currentOrderCount <= 0) {
+            alert('먼저 조건을 선택하거나 치수를 입력해 주세요!');
+            return;
+        }
+
+        navigator.clipboard.writeText(currentOrderCount.toString()).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerText = '복사완료! ✓';
+            btn.style.backgroundColor = '#111111';
+            
+            setTimeout(() => {
+                btn.innerText = '수량 복사하기';
+                btn.style.backgroundColor = '#F2571B';
+            }, 2000);
+        }).catch(err => {
+            alert('복사에 실패했습니다. 수량을 직접 입력해 주세요.');
+        });
+    }
+
+    /* ================= 관리자 기능 ================= */
+    async function sha256Hex(text) {
+        const data = new TextEncoder().encode(text);
+        const buf = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(buf))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+    }
+
+    function syncToggleLabel(key) {
+        const cb = document.getElementById('enable_' + key);
+        const wrap = document.getElementById('toggle_wrap_' + key);
+        const txt = document.getElementById('enable_text_' + key);
+        if (!cb || !wrap || !txt) return;
+
+        if (cb.checked) {
+            wrap.classList.remove('is-inactive');
+            txt.innerText = '활성';
+        } else {
+            wrap.classList.add('is-inactive');
+            txt.innerText = '비활성';
+        }
+    }
+
+    function openAdminLogin() {
+        const panel = document.getElementById('adminPanel');
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+            return;
+        }
+
+        const modal = document.getElementById('pwModal');
+        const pwInput = document.getElementById('adminPwInput');
+        const errEl = document.getElementById('pwModalError');
+
+        pwInput.value = '';
+        pwInput.type = 'password';
+        document.getElementById('eyeIconShow').style.display = 'block';
+        document.getElementById('eyeIconHide').style.display = 'none';
+        errEl.style.display = 'none';
+
+        modal.classList.add('is-open');
+        setTimeout(() => pwInput.focus(), 50);
+    }
+
+    function closePwModal() {
+        const modal = document.getElementById('pwModal');
+        const pwInput = document.getElementById('adminPwInput');
+        pwInput.value = '';
+        pwInput.type = 'password';
+        document.getElementById('eyeIconShow').style.display = 'block';
+        document.getElementById('eyeIconHide').style.display = 'none';
+        document.getElementById('pwModalError').style.display = 'none';
+        modal.classList.remove('is-open');
+    }
+
+    function handleModalBackdropClick(event) {
+        if (event.target.id === 'pwModal') {
+            closePwModal();
+        }
+    }
+
+    function toggleAdminPwVisibility() {
+        const pwInput = document.getElementById('adminPwInput');
+        const iconShow = document.getElementById('eyeIconShow');
+        const iconHide = document.getElementById('eyeIconHide');
+
+        if (pwInput.type === 'password') {
+            pwInput.type = 'text';
+            iconShow.style.display = 'none';
+            iconHide.style.display = 'block';
+        } else {
+            pwInput.type = 'password';
+            iconShow.style.display = 'block';
+            iconHide.style.display = 'none';
+        }
+        pwInput.focus();
+    }
+
+    function handlePwKeydown(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            submitAdminLogin();
+        }
+    }
+
+    async function submitAdminLogin() {
+        const pwInput = document.getElementById('adminPwInput');
+        const errEl = document.getElementById('pwModalError');
+        const inputPw = pwInput.value;
+
+        if (!inputPw) {
+            errEl.innerText = '⚠️ 비밀번호를 입력하세요.';
+            errEl.style.display = 'block';
+            pwInput.focus();
+            return;
+        }
+
+        const inputHash = await sha256Hex(ADMIN_SALT + inputPw);
+
+        if (inputHash === ADMIN_PW_HASH) {
+            errEl.style.display = 'none';
+            closePwModal();
+            const panel = document.getElementById('adminPanel');
+            updateAdminDisplay();
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            errEl.innerText = '⚠️ 비밀번호가 일치하지 않습니다.';
+            errEl.style.display = 'block';
+            pwInput.select();
+        }
+    }
+
+    function closeAdminPanel() {
+        document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    function updateAdminDisplay() {
+        MATERIAL_KEYS.forEach(key => {
+            if (key === 'foamex') {
+                document.getElementById('cur_foamex').innerText = '네이버판가';
+            } else {
+                document.getElementById('cur_' + key).innerText = activePrices[key].toLocaleString() + '원';
+            }
+            const cb = document.getElementById('enable_' + key);
+            if (cb) {
+                cb.checked = !!activeEnabled[key];
+                syncToggleLabel(key);
+            }
+        });
+    }
+
+    function saveAdminSettings() {
+        const nextEnabled = {};
+        let enabledCount = 0;
+
+        MATERIAL_KEYS.forEach(key => {
+            const isChecked = document.getElementById('enable_' + key).checked;
+            nextEnabled[key] = isChecked;
+            if (isChecked) enabledCount++;
+        });
+
+        if (enabledCount === 0) {
+            alert('최소 1개 이상의 재질은 활성화해야 합니다.');
+            return;
+        }
+
+        ['acrylic', 'pc', 'pcroll'].forEach(key => {
+            const inputEl = document.getElementById('new_' + key);
+            const val = parseFloat(inputEl.value);
+            if (!isNaN(val) && val > 0) {
+                activePrices[key] = val;
+                inputEl.value = '';
+            }
+        });
+
+        activeEnabled = nextEnabled;
+        localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
+        localStorage.setItem('bluemoon_material_enabled', JSON.stringify(activeEnabled));
+
+        applyMaterialAvailability();
+        onMaterialChange();
+        updateAdminDisplay();
+        alert('재질 활성화 상태와 기준 단가가 반영되었습니다.');
+    }
+
+    function resetDefaultSettings() {
+        if (confirm('모든 재질의 활성화 상태와 기준 단가를 초기 기본값으로 되돌리시겠습니까?')) {
+            activePrices = { ...DEFAULT_PRICES };
+            activeEnabled = { ...DEFAULT_ENABLED };
+            localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
+            localStorage.setItem('bluemoon_material_enabled', JSON.stringify(activeEnabled));
+
+            ['acrylic', 'pc', 'pcroll'].forEach(key => {
+                document.getElementById('new_' + key).value = '';
+            });
+
+            applyMaterialAvailability();
+            onMaterialChange();
+            updateAdminDisplay();
+            alert('초기 기본값으로 복원되었습니다.');
+        }
+    }
+
+    // 페이지 로드 시 저장된 설정 및 초기 옵션 적용
+    applyMaterialAvailability();
+    updateAdminDisplay();
+    onMaterialChange();
+</script>
+
+</body>
+</html>
