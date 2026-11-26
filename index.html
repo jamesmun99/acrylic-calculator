@@ -481,6 +481,16 @@
             color: var(--ink);
         }
 
+        .admin-sub-title {
+            font-size: 17.5px;
+            font-weight: 800;
+            color: var(--edge-dark);
+            margin-top: 22px;
+            margin-bottom: 12px;
+            padding-top: 16px;
+            border-top: 1.5px dashed var(--line);
+        }
+
         .admin-close {
             background: #E4E4E4;
             border: none;
@@ -498,6 +508,15 @@
             gap: 10px;
             margin-bottom: 14px;
             font-size: 17px;
+        }
+
+        .admin-foamex-row {
+            display: grid;
+            grid-template-columns: 0.8fr 1fr 1.15fr 1fr 1.15fr;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 16.5px;
         }
 
         .admin-row-header {
@@ -664,7 +683,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .admin-row {
+            .admin-row,
+            .admin-foamex-row {
                 grid-template-columns: 1fr 1fr;
                 background: #FFFFFF;
                 padding: 12px;
@@ -705,53 +725,40 @@
         </div>
     </div>
 
-    <!-- 2. 색상 → 두께 → 가로/세로 → 수량 입력 -->
+    <!-- 2. 색상 → 가로/세로/두께 → 수량 입력 -->
     <div class="card">
-        <!-- 2-1. 색상 선택 (모든 재질 공통 첫 번째 항목) -->
+        <!-- 2-1. 색상 선택 -->
         <div class="input-group">
             <label class="field-label">색상 선택</label>
             <div id="colorOptionsContainer" class="option-grid-2"></div>
         </div>
 
-        <!-- 2-2A. 아크릴 / PC 맞춤 치수 입력 (아크릴·PC 선택 시에만 치수 한도 규칙 적용) -->
+        <!-- 2-2A. 아크릴 / PC / 포맥스 맞춤 치수 입력 -->
         <div id="customDimInputs">
-            <div class="scope-notice-box">
-                📏 <strong>아크릴 · PC 맞춤 재단 전용 입력</strong> (가로·세로 60~1,500mm / 두께 최대 10mm 한도 적용)
+            <div class="scope-notice-box" id="customDimNotice">
+                📏 <strong>아크릴 · PC 맞춤 재단 전용 입력</strong> (가로·세로 60~1,200mm / 두께 최대 10mm 한도 적용)
             </div>
 
             <div class="input-group">
-                <label class="field-label" for="width">가로 (mm) - 60mm ~ 1,500mm <span class="mat-scope-badge">아크릴·PC 전용</span></label>
-                <input type="number" id="width" placeholder="[아크릴·PC 전용] 가로 입력 (60~1500)" oninput="validateAndCalculate('width', 'widthError', 60, 1500)" onblur="checkMinLimit('width', 'widthError', 60)" onkeydown="blurOnEnter(event)">
-                <div class="error-msg" id="widthError">⚠️ 아크릴·PC 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
+                <label class="field-label" for="width">가로 (mm) - 60mm ~ 1,200mm <span class="mat-scope-badge" id="widthScopeBadge">아크릴·PC 전용</span></label>
+                <input type="number" id="width" placeholder="가로 입력 (60~1200)" oninput="validateAndCalculate('width', 'widthError', 60, 1200)" onblur="checkMinLimit('width', 'widthError', 60)" onkeydown="blurOnEnter(event)">
+                <div class="error-msg" id="widthError">⚠️ 치수는 60mm 이상 1,200mm 이하만 입력 가능합니다.</div>
             </div>
 
             <div class="input-group">
-                <label class="field-label" for="height">세로 (mm) - 60mm ~ 1,500mm <span class="mat-scope-badge">아크릴·PC 전용</span></label>
-                <input type="number" id="height" placeholder="[아크릴·PC 전용] 세로 입력 (60~1500)" oninput="validateAndCalculate('height', 'heightError', 60, 1500)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
-                <div class="error-msg" id="heightError">⚠️ 아크릴·PC 치수는 60mm 이상 1,500mm 이하만 입력 가능합니다.</div>
+                <label class="field-label" for="height">세로 (mm) - 60mm ~ 1,200mm <span class="mat-scope-badge" id="heightScopeBadge">아크릴·PC 전용</span></label>
+                <input type="number" id="height" placeholder="세로 입력 (60~1200)" oninput="validateAndCalculate('height', 'heightError', 60, 1200)" onblur="checkMinLimit('height', 'heightError', 60)" onkeydown="blurOnEnter(event)">
+                <div class="error-msg" id="heightError">⚠️ 치수는 60mm 이상 1,200mm 이하만 입력 가능합니다.</div>
             </div>
 
             <div class="input-group">
-                <label class="field-label" for="thickness">두께 (mm) - 최대 10mm <span class="mat-scope-badge">아크릴·PC 전용</span></label>
-                <input type="number" id="thickness" placeholder="[아크릴·PC 전용] 두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
-                <div class="error-msg" id="thicknessError">⚠️ 아크릴·PC 최대 입력 가능 두께는 10mm입니다.</div>
+                <label class="field-label" for="thickness">두께 (mm) - 최대 10mm <span class="mat-scope-badge" id="thicknessScopeBadge">아크릴·PC 전용</span></label>
+                <input type="number" id="thickness" placeholder="두께 입력 (최대 10)" oninput="validateThickness()" onkeydown="blurOnEnter(event)">
+                <div class="error-msg" id="thicknessError">⚠️ 최대 입력 가능 두께는 10mm입니다.</div>
             </div>
         </div>
 
-        <!-- 2-2B. 포맥스 선택 입력: 칼라(상단) → 두께 → 가로×세로 -->
-        <div id="foamexInputs" style="display: none;">
-            <div class="input-group">
-                <label class="field-label">두께 선택</label>
-                <div id="foamexThicknessContainer" class="option-grid-3"></div>
-            </div>
-
-            <div class="input-group">
-                <label class="field-label">가로 × 세로 선택 (mm)</label>
-                <div id="foamexSizeContainer" class="option-grid-2"></div>
-            </div>
-        </div>
-
-        <!-- 2-2C. PC롤 선택 입력: 칼라(상단) → 두께 → 가로 → 세로(두께 연동) -->
+        <!-- 2-2B. PC롤 선택 입력: 칼라(상단) → 두께 → 가로 → 세로(두께 연동) -->
         <div id="pcrollInputs" style="display: none;">
             <div class="input-group">
                 <label class="field-label">두께 선택</label>
@@ -830,14 +837,14 @@
         </div>
 
         <div class="admin-row">
-            <div class="admin-mat-name">포맥스<span class="admin-mat-unit">네이버판가표 적용</span></div>
+            <div class="admin-mat-name">포맥스<span class="admin-mat-unit">비중 (kg/m³·mm)</span></div>
             <label class="switch-control" id="toggle_wrap_foamex">
                 <input type="checkbox" id="enable_foamex" checked onchange="syncToggleLabel('foamex')">
                 <span class="switch-slider"></span>
                 <span class="switch-status-text" id="enable_text_foamex">활성</span>
             </label>
-            <div class="current-val-badge" id="cur_foamex">네이버판가</div>
-            <input type="number" class="admin-input" id="new_foamex" placeholder="네이버판가 사용" disabled>
+            <div class="current-val-badge" id="cur_foamex">0.55</div>
+            <input type="number" step="0.01" class="admin-input" id="new_foamex_density" placeholder="비중(미입력시 유지)">
         </div>
 
         <div class="admin-row">
@@ -850,6 +857,17 @@
             <div class="current-val-badge" id="cur_pcroll">6,000원</div>
             <input type="number" class="admin-input" id="new_pcroll" placeholder="미입력시 유지">
         </div>
+
+        <!-- 포맥스 두께 · 색상별 중량단가 관리 -->
+        <div class="admin-sub-title">🎨 포맥스 두께 · 색상별 중량단가 (원/kg)</div>
+        <div class="admin-foamex-row admin-row-header">
+            <div>두께</div>
+            <div>색상</div>
+            <div style="text-align: right;">현재 중량단가</div>
+            <div style="text-align: right;">신규 단가 입력</div>
+            <div style="text-align: right;">비고</div>
+        </div>
+        <div id="foamexRateAdminRows"></div>
 
         <div class="admin-actions">
             <button type="button" class="admin-save-btn" onclick="saveAdminSettings()">설정 저장 및 반영</button>
@@ -887,11 +905,16 @@
 <script>
     let currentOrderCount = 0;
     const MATERIAL_KEYS = ['acrylic', 'pc', 'foamex', 'pcroll'];
+    const FOAMEX_THICKNESS_LIST = [1, 2, 3, 5, 8, 10];
+    const FOAMEX_COLORS = ['백색', '칼라'];
+    const MIN_DIM_MM = 60;
+    const MAX_DIM_MM = 1200;
 
-    // 재질별 비중 설정 (아크릴 1.19 / PC 1.2 / PC롤 1.2)
-    const MATERIAL_DENSITY = {
+    // 재질별 기본 비중 설정 (아크릴 1.19 / PC 1.2 / PC롤 1.2 / 포맥스 0.55)
+    const DEFAULT_DENSITY = {
         acrylic: 1.19,
         pc: 1.2,
+        foamex: 0.55,
         pcroll: 1.2
     };
 
@@ -903,8 +926,28 @@
     const DEFAULT_PRICES = {
         acrylic: 12000,   // kg당
         pc: 16000,        // kg당
-        foamex: 35000,    // 네이버판가표 사용
+        foamex: 3500,     // 기본 참고값
         pcroll: 6000      // kg당 중량단가 (6,000원)
+    };
+
+    // 알파폼 공급단가표 기준 두께·색상별 중량단가 (원/kg)
+    const DEFAULT_FOAMEX_RATES = {
+        '백색': {
+            1: 4920,
+            2: 3360,
+            3: 3360,
+            5: 3240,
+            8: 3240,
+            10: 3240
+        },
+        '칼라': {
+            1: 5760,
+            2: 3960,
+            3: 4320,
+            5: 3840,
+            8: 3840,
+            10: 3840
+        }
     };
 
     // 기본 재질 활성화 설정
@@ -914,35 +957,6 @@
         foamex: true,
         pcroll: true
     };
-
-    // 알파폼_공급단가표_260401_2.xlsx '네이버판가' 시트 데이터 (판가 기준)
-    const FOAMEX_NAVER_PRICES = [
-        { thickness: 1, colorSheet: '백색', size: '910 X 1820', price: 5900 },
-        { thickness: 1, colorSheet: '백색', size: '1220 X 2440', price: 10100 },
-        { thickness: 2, colorSheet: '백색', size: '910 X 1820', price: 8000 },
-        { thickness: 2, colorSheet: '백색', size: '1220 X 2440', price: 13900 },
-        { thickness: 3, colorSheet: '백색', size: '910 X 1820', price: 11800 },
-        { thickness: 3, colorSheet: '백색', size: '1220 X 2440', price: 20600 },
-        { thickness: 5, colorSheet: '백색', size: '910 X 1820', price: 19500 },
-        { thickness: 5, colorSheet: '백색', size: '1220 X 2440', price: 34400 },
-        { thickness: 8, colorSheet: '백색', size: '910 X 1820', price: 31100 },
-        { thickness: 8, colorSheet: '백색', size: '1220 X 2440', price: 55000 },
-        { thickness: 10, colorSheet: '백색', size: '910 X 1820', price: 38900 },
-        { thickness: 10, colorSheet: '백색', size: '1220 X 2440', price: 68600 },
-
-        { thickness: 1, colorSheet: '컬러', size: '910 X 1820', price: 6900 },
-        { thickness: 1, colorSheet: '컬러', size: '1220 X 2440', price: 11900 },
-        { thickness: 2, colorSheet: '컬러', size: '910 X 1820', price: 9400 },
-        { thickness: 2, colorSheet: '컬러', size: '1220 X 2440', price: 16500 },
-        { thickness: 3, colorSheet: '컬러', size: '910 X 1820', price: 15500 },
-        { thickness: 3, colorSheet: '컬러', size: '1220 X 2440', price: 26100 },
-        { thickness: 5, colorSheet: '컬러', size: '910 X 1820', price: 23000 },
-        { thickness: 5, colorSheet: '컬러', size: '1220 X 2440', price: 40600 },
-        { thickness: 8, colorSheet: '컬러', size: '910 X 1820', price: 36700 },
-        { thickness: 8, colorSheet: '컬러', size: '1220 X 2440', price: 64900 },
-        { thickness: 10, colorSheet: '컬러', size: '910 X 1820', price: 45900 },
-        { thickness: 10, colorSheet: '컬러', size: '1220 X 2440', price: 81000 }
-    ];
 
     // 재질별 옵션 구성
     const MATERIAL_CONFIG = {
@@ -956,11 +970,7 @@
         },
         foamex: {
             colors: ['백색', '칼라'],
-            defaultColor: '백색',
-            thicknesses: [1, 2, 3, 5, 8, 10],
-            defaultThickness: 2,
-            sizes: ['910 X 1820', '1220 X 2440'],
-            defaultSize: '910 X 1820'
+            defaultColor: '백색'
         },
         pcroll: {
             colors: ['모든 칼라'],
@@ -972,14 +982,65 @@
         }
     };
 
-    let activePrices = JSON.parse(localStorage.getItem('bluemoon_material_prices')) || { ...DEFAULT_PRICES };
+    let activePrices = Object.assign(
+        { ...DEFAULT_PRICES },
+        JSON.parse(localStorage.getItem('bluemoon_material_prices')) || {}
+    );
+    let activeDensity = Object.assign(
+        { ...DEFAULT_DENSITY },
+        JSON.parse(localStorage.getItem('bluemoon_material_density')) || {}
+    );
+    let activeFoamexRates = mergeFoamexRates(
+        JSON.parse(localStorage.getItem('bluemoon_foamex_rates')) || {}
+    );
     let activeEnabled = Object.assign(
         { ...DEFAULT_ENABLED },
         JSON.parse(localStorage.getItem('bluemoon_material_enabled')) || {}
     );
 
+    function mergeFoamexRates(saved) {
+        const result = {
+            '백색': { ...DEFAULT_FOAMEX_RATES['백색'] },
+            '칼라': { ...DEFAULT_FOAMEX_RATES['칼라'] }
+        };
+        FOAMEX_COLORS.forEach(col => {
+            if (saved && saved[col]) {
+                FOAMEX_THICKNESS_LIST.forEach(t => {
+                    const v = parseFloat(saved[col][t]);
+                    if (!isNaN(v) && v > 0) {
+                        result[col][t] = v;
+                    }
+                });
+            }
+        });
+        return result;
+    }
+
     function getDensity(mat) {
-        return MATERIAL_DENSITY[mat] || 1.19;
+        return parseFloat(activeDensity[mat]) || DEFAULT_DENSITY[mat] || 1.19;
+    }
+
+    // 입력 두께에 매칭되는 포맥스 기준 두께(1, 2, 3, 5, 8, 10) 찾기
+    function resolveFoamexThicknessKey(inputThick) {
+        if (FOAMEX_THICKNESS_LIST.includes(inputThick)) {
+            return inputThick;
+        }
+        let closest = FOAMEX_THICKNESS_LIST[0];
+        let minDiff = Math.abs(inputThick - closest);
+        for (let i = 1; i < FOAMEX_THICKNESS_LIST.length; i++) {
+            const diff = Math.abs(inputThick - FOAMEX_THICKNESS_LIST[i]);
+            if (diff < minDiff || (diff === minDiff && FOAMEX_THICKNESS_LIST[i] > closest)) {
+                minDiff = diff;
+                closest = FOAMEX_THICKNESS_LIST[i];
+            }
+        }
+        return closest;
+    }
+
+    function getFoamexRate(color, thickness) {
+        const colKey = (color === '칼라') ? '칼라' : '백색';
+        const tKey = resolveFoamexThicknessKey(thickness);
+        return activeFoamexRates[colKey][tKey];
     }
 
     function blurOnEnter(event) {
@@ -989,7 +1050,6 @@
         }
     }
 
-    // 한 개 선택항목만 있는 경우(또는 기본값 지정 시) 디폴트 선택 헬퍼
     function renderRadioOptions(containerId, radioName, items, preferredValue, onChangeFn, formatLabelFn) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -1024,9 +1084,29 @@
         return MATERIAL_KEYS.find(k => activeEnabled[k]) || 'acrylic';
     }
 
-    // 아크릴 또는 PC 재질 여부 판별 (치수 한도 규칙 적용 대상)
-    function isAcrylicOrPc(mat) {
-        return mat === 'acrylic' || mat === 'pc';
+    // 아크릴, PC, 포맥스는 동일하게 치수 입력 폼 및 한도 규칙 적용
+    function isCustomSheetMaterial(mat) {
+        return mat === 'acrylic' || mat === 'pc' || mat === 'foamex';
+    }
+
+    function updateCustomDimLabels(mat) {
+        const noticeEl = document.getElementById('customDimNotice');
+        const widthBadge = document.getElementById('widthScopeBadge');
+        const heightBadge = document.getElementById('heightScopeBadge');
+        const thicknessBadge = document.getElementById('thicknessScopeBadge');
+
+        let labelText = '아크릴·PC 전용';
+        let noticeHtml = `📏 <strong>아크릴 · PC 맞춤 재단 전용 입력</strong> (가로·세로 ${MIN_DIM_MM}~${MAX_DIM_MM.toLocaleString()}mm / 두께 최대 10mm 한도 적용)`;
+
+        if (mat === 'foamex') {
+            labelText = '포맥스 전용';
+            noticeHtml = `📏 <strong>포맥스 맞춤 재단 입력</strong> (가로·세로 ${MIN_DIM_MM}~${MAX_DIM_MM.toLocaleString()}mm / 두께 최대 10mm · 색상·두께별 중량단가 적용)`;
+        }
+
+        if (noticeEl) noticeEl.innerHTML = noticeHtml;
+        if (widthBadge) widthBadge.innerText = labelText;
+        if (heightBadge) heightBadge.innerText = labelText;
+        if (thicknessBadge) thicknessBadge.innerText = labelText;
     }
 
     function clearCustomDimErrors() {
@@ -1059,7 +1139,7 @@
         const mat = getCurrentMaterial();
         const cfg = MATERIAL_CONFIG[mat];
 
-        // 1) 색상 선택 항목 렌더링 (1개면 자동 디폴트, 포맥스는 '백색' 디폴트)
+        // 1) 색상 선택 항목 렌더링
         renderRadioOptions(
             'colorOptionsContainer',
             'colorOption',
@@ -1068,36 +1148,25 @@
             'calculate()'
         );
 
-        // 2) 재질별 입력 폼 전환 및 순서(칼라 → 두께 → 가로 → 세로) 렌더링
+        // 2) 재질별 입력 폼 전환
         const customDimEl = document.getElementById('customDimInputs');
-        const foamexEl = document.getElementById('foamexInputs');
         const pcrollEl = document.getElementById('pcrollInputs');
 
         customDimEl.style.display = 'none';
-        foamexEl.style.display = 'none';
         pcrollEl.style.display = 'none';
         clearCustomDimErrors();
 
-        if (isAcrylicOrPc(mat)) {
+        if (isCustomSheetMaterial(mat)) {
             customDimEl.style.display = 'block';
-        } else if (mat === 'foamex') {
-            foamexEl.style.display = 'block';
-            renderRadioOptions(
-                'foamexThicknessContainer',
-                'foamexThickness',
-                cfg.thicknesses,
-                cfg.defaultThickness,
-                'calculate()',
-                v => `${v}t (${v}mm)`
-            );
-            renderRadioOptions(
-                'foamexSizeContainer',
-                'foamexSize',
-                cfg.sizes,
-                cfg.defaultSize,
-                'calculate()',
-                v => `${v} mm`
-            );
+            updateCustomDimLabels(mat);
+
+            // 기존 입력값이 1200mm를 초과한 경우 즉시 한도 보정
+            ['width', 'height'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value !== '' && parseFloat(el.value) > MAX_DIM_MM) {
+                    el.value = MAX_DIM_MM;
+                }
+            });
         } else if (mat === 'pcroll') {
             pcrollEl.style.display = 'block';
             renderRadioOptions(
@@ -1145,13 +1214,12 @@
         }
     });
 
-    // 아크릴과 PC를 선택할 때만 가로/세로 사이즈 한도 규칙 적용
     function validateAndCalculate(inputId, errorId, minLimit, maxLimit) {
         const mat = getCurrentMaterial();
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
 
-        if (!isAcrylicOrPc(mat)) {
+        if (!isCustomSheetMaterial(mat)) {
             errorEl.style.display = 'none';
             calculate();
             return;
@@ -1167,7 +1235,7 @@
 
         if (val > maxLimit) {
             inputEl.value = maxLimit;
-            errorEl.innerText = `⚠️ 아크릴·PC 최대 입력 가능 길이는 ${maxLimit.toLocaleString()}mm입니다.`;
+            errorEl.innerText = `⚠️ 최대 입력 가능 길이는 ${maxLimit.toLocaleString()}mm입니다.`;
             errorEl.style.display = 'block';
         } else {
             errorEl.style.display = 'none';
@@ -1176,13 +1244,12 @@
         calculate();
     }
 
-    // 아크릴과 PC를 선택할 때만 최소 치수(60mm) 한도 규칙 적용
     function checkMinLimit(inputId, errorId, minLimit) {
         const mat = getCurrentMaterial();
         const inputEl = document.getElementById(inputId);
         const errorEl = document.getElementById(errorId);
 
-        if (!isAcrylicOrPc(mat)) {
+        if (!isCustomSheetMaterial(mat)) {
             errorEl.style.display = 'none';
             return;
         }
@@ -1192,19 +1259,18 @@
         const val = parseFloat(inputEl.value);
         if (val < minLimit) {
             inputEl.value = minLimit;
-            errorEl.innerText = `⚠️ 아크릴·PC 최소 입력 가능 길이는 ${minLimit}mm입니다.`;
+            errorEl.innerText = `⚠️ 최소 입력 가능 길이는 ${minLimit}mm입니다.`;
             errorEl.style.display = 'block';
             calculate();
         }
     }
 
-    // 아크릴과 PC를 선택할 때만 최대 두께(10mm) 한도 규칙 적용
     function validateThickness() {
         const mat = getCurrentMaterial();
         const inputEl = document.getElementById('thickness');
         const errorEl = document.getElementById('thicknessError');
 
-        if (!isAcrylicOrPc(mat)) {
+        if (!isCustomSheetMaterial(mat)) {
             errorEl.style.display = 'none';
             calculate();
             return;
@@ -1236,7 +1302,6 @@
         calculate();
     }
 
-    // 고객 화면의 재질 선택 버튼 활성/비활성 상태 반영
     function applyMaterialAvailability() {
         let firstAvailableRadio = null;
 
@@ -1282,7 +1347,7 @@
         let unitPrice = 0;
         let detailText = '';
 
-        if (isAcrylicOrPc(matType)) {
+        if (isCustomSheetMaterial(matType)) {
             const width = parseFloat(document.getElementById('width').value) || 0;
             const height = parseFloat(document.getElementById('height').value) || 0;
             const thickness = parseFloat(document.getElementById('thickness').value) || 0;
@@ -1295,29 +1360,15 @@
                 return;
             }
 
-            const kgPrice = activePrices[matType];
             const density = getDensity(matType);
+            const kgPrice = (matType === 'foamex')
+                ? getFoamexRate(selectedColor, thickness)
+                : activePrices[matType];
+
             const rawValue = ((width * height * thickness * density) / 1000000 * kgPrice) + 500;
             const ceilingValue = Math.ceil(rawValue / 200) * 200;
             unitPrice = Math.max(1000, ceilingValue);
-            detailText = `개당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor} (비중 ${density})`;
-
-        } else if (matType === 'foamex') {
-            const thickVal = parseFloat(getSelectedRadioValue('foamexThickness') || '2');
-            const sizeVal = getSelectedRadioValue('foamexSize') || '910 X 1820';
-            const colorSheet = (selectedColor === '칼라') ? '컬러' : '백색';
-
-            const matched = FOAMEX_NAVER_PRICES.find(
-                row => row.thickness === thickVal && row.colorSheet === colorSheet && row.size === sizeVal
-            );
-
-            if (matched) {
-                unitPrice = matched.price;
-                detailText = `장당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`;
-            } else {
-                unitPrice = 0;
-                detailText = `장당 단가: 0원 · 색상: ${selectedColor}`;
-            }
+            detailText = `개당 단가: ${unitPrice.toLocaleString()}원 · 색상: ${selectedColor}`;
 
         } else if (matType === 'pcroll') {
             const t = parseFloat(getSelectedRadioValue('pcrollThickness') || '2');
@@ -1390,6 +1441,29 @@
             wrap.classList.add('is-inactive');
             txt.innerText = '비활성';
         }
+    }
+
+    function renderFoamexRateAdminRows() {
+        const container = document.getElementById('foamexRateAdminRows');
+        if (!container) return;
+
+        let html = '';
+        FOAMEX_COLORS.forEach(col => {
+            FOAMEX_THICKNESS_LIST.forEach(t => {
+                const rateVal = activeFoamexRates[col][t];
+                const idSafe = (col === '백색' ? 'white' : 'color') + '_' + t;
+                html += `
+                    <div class="admin-foamex-row">
+                        <div class="admin-mat-name">${t}t (${t}.00)</div>
+                        <div class="admin-mat-name">${col}</div>
+                        <div class="current-val-badge" id="cur_foamex_${idSafe}">${Number(rateVal).toLocaleString()}원</div>
+                        <input type="number" class="admin-input" id="new_foamex_${idSafe}" placeholder="미입력시 유지">
+                        <div style="text-align: right; color: var(--ink-2); font-size: 14.5px; font-weight: 600;">알파폼 기준</div>
+                    </div>
+                `;
+            });
+        });
+        container.innerHTML = html;
     }
 
     function openAdminLogin() {
@@ -1489,7 +1563,7 @@
     function updateAdminDisplay() {
         MATERIAL_KEYS.forEach(key => {
             if (key === 'foamex') {
-                document.getElementById('cur_foamex').innerText = '네이버판가';
+                document.getElementById('cur_foamex').innerText = String(getDensity('foamex'));
             } else {
                 document.getElementById('cur_' + key).innerText = activePrices[key].toLocaleString() + '원';
             }
@@ -1499,6 +1573,8 @@
                 syncToggleLabel(key);
             }
         });
+
+        renderFoamexRateAdminRows();
     }
 
     function saveAdminSettings() {
@@ -1525,8 +1601,30 @@
             }
         });
 
+        const foamexDensityInput = document.getElementById('new_foamex_density');
+        const foamexDensityVal = parseFloat(foamexDensityInput.value);
+        if (!isNaN(foamexDensityVal) && foamexDensityVal > 0) {
+            activeDensity.foamex = foamexDensityVal;
+            foamexDensityInput.value = '';
+        }
+
+        FOAMEX_COLORS.forEach(col => {
+            FOAMEX_THICKNESS_LIST.forEach(t => {
+                const idSafe = (col === '백색' ? 'white' : 'color') + '_' + t;
+                const inputEl = document.getElementById('new_foamex_' + idSafe);
+                if (!inputEl) return;
+                const val = parseFloat(inputEl.value);
+                if (!isNaN(val) && val > 0) {
+                    activeFoamexRates[col][t] = val;
+                    inputEl.value = '';
+                }
+            });
+        });
+
         activeEnabled = nextEnabled;
         localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
+        localStorage.setItem('bluemoon_material_density', JSON.stringify(activeDensity));
+        localStorage.setItem('bluemoon_foamex_rates', JSON.stringify(activeFoamexRates));
         localStorage.setItem('bluemoon_material_enabled', JSON.stringify(activeEnabled));
 
         applyMaterialAvailability();
@@ -1538,13 +1636,19 @@
     function resetDefaultSettings() {
         if (confirm('모든 재질의 활성화 상태와 기준 단가를 초기 기본값으로 되돌리시겠습니까?')) {
             activePrices = { ...DEFAULT_PRICES };
+            activeDensity = { ...DEFAULT_DENSITY };
+            activeFoamexRates = mergeFoamexRates(DEFAULT_FOAMEX_RATES);
             activeEnabled = { ...DEFAULT_ENABLED };
+
             localStorage.setItem('bluemoon_material_prices', JSON.stringify(activePrices));
+            localStorage.setItem('bluemoon_material_density', JSON.stringify(activeDensity));
+            localStorage.setItem('bluemoon_foamex_rates', JSON.stringify(activeFoamexRates));
             localStorage.setItem('bluemoon_material_enabled', JSON.stringify(activeEnabled));
 
             ['acrylic', 'pc', 'pcroll'].forEach(key => {
                 document.getElementById('new_' + key).value = '';
             });
+            document.getElementById('new_foamex_density').value = '';
 
             applyMaterialAvailability();
             onMaterialChange();
