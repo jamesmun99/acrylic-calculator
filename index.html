@@ -36,7 +36,7 @@
         }
 
         html {
-            font-size: clamp(17px, 0.35vw + 16px, 20px);
+            font-size: clamp(18.5px, 0.4vw + 17px, 22px);
         }
 
         html, body {
@@ -46,7 +46,7 @@
             color: var(--ink);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .wrap {
@@ -85,7 +85,7 @@
             align-items: center;
             justify-content: center;
             padding: 16px 14px;
-            min-height: 58px;
+            min-height: 60px;
             border: 1.5px solid var(--line);
             border-radius: 11px;
             cursor: pointer;
@@ -125,7 +125,7 @@
         }
 
         .disabled-tag {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 600;
             color: #9E9E9E;
             margin-left: 5px;
@@ -149,7 +149,7 @@
 
         input[type="number"], input[type="password"], input[type="text"] {
             width: 100%;
-            min-height: 54px;
+            min-height: 56px;
             font: inherit;
             font-size: 20.5px;
             font-weight: 600;
@@ -169,14 +169,14 @@
 
         input::placeholder {
             color: #BDBDBD;
-            font-size: 17px;
+            font-size: 18.5px;
             font-weight: 500;
         }
 
         .error-msg {
             display: none;
             color: var(--warn);
-            font-size: 14.5px;
+            font-size: 16px;
             margin-top: 8px;
             font-weight: 700;
         }
@@ -197,7 +197,7 @@
         }
 
         .result-value {
-            font-size: 42px;
+            font-size: 48px;
             font-weight: 800;
             color: var(--edge-dark);
             letter-spacing: -.02em;
@@ -234,8 +234,8 @@
             color: #ffffff;
             border: none;
             border-radius: 10px;
-            padding: 12px 20px;
-            min-height: 48px;
+            padding: 13px 22px;
+            min-height: 50px;
             font-size: 17.5px;
             font-weight: 700;
             cursor: pointer;
@@ -257,9 +257,9 @@
             background: linear-gradient(135deg, #FFF2EC 0%, #FFE4D9 100%);
             border: 2px solid var(--edge);
             border-radius: var(--r);
-            padding: 16px 20px;
+            padding: 18px 22px;
             margin-bottom: 18px;
-            font-size: clamp(18px, 1.2vw + 13px, 24px);
+            font-size: clamp(20px, 1.35vw + 15px, 25px);
             font-weight: 800;
             color: var(--edge-dark);
             text-align: center;
@@ -276,8 +276,8 @@
         }
 
         .admin-trigger {
-            font-size: 13px;
-            color: #9A9A9A;
+            font-size: 15px;
+            color: #8E8E8E;
             background: none;
             border: none;
             cursor: pointer;
@@ -307,23 +307,23 @@
 
         .pw-modal-box {
             width: 100%;
-            max-width: 420px;
+            max-width: 450px;
             background: #FFFFFF;
             border: 1.5px solid var(--line);
             border-radius: var(--r);
-            padding: 26px 24px;
+            padding: 28px 26px;
             box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
         }
 
         .pw-modal-title {
-            font-size: 18.5px;
+            font-size: 20.5px;
             font-weight: 800;
             color: var(--ink);
             margin-bottom: 6px;
         }
 
         .pw-modal-desc {
-            font-size: 14.5px;
+            font-size: 16.5px;
             color: var(--ink-2);
             margin-bottom: 16px;
             font-weight: 600;
@@ -336,7 +336,7 @@
         }
 
         .pw-input-wrap input {
-            padding-right: 52px;
+            padding-right: 54px;
             letter-spacing: 0.06em;
         }
 
@@ -345,8 +345,8 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -366,7 +366,7 @@
         .pw-modal-error {
             display: none;
             color: var(--warn);
-            font-size: 14px;
+            font-size: 15.5px;
             font-weight: 700;
             margin-top: 8px;
         }
@@ -383,8 +383,8 @@
             color: #FFFFFF;
             border: none;
             border-radius: 10px;
-            min-height: 48px;
-            font-size: 16px;
+            min-height: 50px;
+            font-size: 17.5px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -399,8 +399,8 @@
             color: var(--ink);
             border: none;
             border-radius: 10px;
-            min-height: 48px;
-            font-size: 16px;
+            min-height: 50px;
+            font-size: 17.5px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -425,7 +425,7 @@
         }
 
         .admin-title {
-            font-size: 17px;
+            font-size: 19px;
             font-weight: 800;
             color: var(--ink);
         }
@@ -434,8 +434,8 @@
             background: #E4E4E4;
             border: none;
             border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 14.5px;
+            padding: 9px 16px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -446,11 +446,11 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 14px;
-            font-size: 15px;
+            font-size: 17px;
         }
 
         .admin-row-header {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 800;
             color: var(--ink-2);
             padding-bottom: 8px;
@@ -460,12 +460,12 @@
         .admin-mat-name {
             font-weight: 700;
             color: var(--ink);
-            font-size: 15.5px;
+            font-size: 17.5px;
         }
 
         .admin-mat-unit {
             display: block;
-            font-size: 12.5px;
+            font-size: 14.5px;
             font-weight: 600;
             color: var(--ink-2);
             margin-top: 2px;
@@ -478,7 +478,7 @@
             justify-content: center;
             gap: 8px;
             margin-bottom: 0;
-            padding: 8px 10px;
+            padding: 9px 10px;
             border-radius: 9px;
             background: #FFFFFF;
             border: 1.5px solid var(--line);
@@ -525,10 +525,10 @@
         }
 
         .switch-status-text {
-            font-size: 13.5px;
+            font-size: 15.5px;
             font-weight: 800;
             color: var(--edge-dark);
-            min-width: 44px;
+            min-width: 48px;
             text-align: left;
         }
 
@@ -542,18 +542,18 @@
 
         .current-val-badge {
             background: #EFEFEF;
-            padding: 11px 12px;
+            padding: 12px 14px;
             border-radius: 9px;
             font-weight: 800;
             color: #222;
             text-align: right;
-            font-size: 15px;
+            font-size: 17px;
         }
 
         .admin-input {
-            padding: 11px 12px !important;
-            min-height: 48px !important;
-            font-size: 15px !important;
+            padding: 12px 14px !important;
+            min-height: 50px !important;
+            font-size: 17px !important;
             text-align: right;
         }
 
@@ -570,8 +570,8 @@
             border: none;
             border-radius: 10px;
             padding: 14px 16px;
-            min-height: 50px;
-            font-size: 15.5px;
+            min-height: 52px;
+            font-size: 17.5px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -583,8 +583,8 @@
             border: 1.5px solid var(--warn);
             border-radius: 10px;
             padding: 14px 16px;
-            min-height: 50px;
-            font-size: 15.5px;
+            min-height: 52px;
+            font-size: 17.5px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -595,7 +595,7 @@
             }
 
             .top-brand-banner {
-                padding: 14px 16px;
+                padding: 15px 16px;
                 margin-bottom: 16px;
             }
 
@@ -604,7 +604,7 @@
             }
 
             .result-value {
-                font-size: 36px;
+                font-size: 40px;
             }
 
             .radio-group {
@@ -766,12 +766,12 @@
             <input type="password" id="adminPwInput" placeholder="비밀번호 입력" autocomplete="off" onkeydown="handlePwKeydown(event)">
             <button type="button" class="pw-eye-btn" id="pwEyeBtn" onclick="toggleAdminPwVisibility()" aria-label="비밀번호 표시 전환" title="비밀번호 보기/숨기기">
                 <!-- 기본 눈 모양 아이콘 (비밀번호 숨김 상태) -->
-                <svg id="eyeIconShow" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="eyeIconShow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
                 </svg>
                 <!-- 빗금 친 눈 아이콘 (비밀번호 표시 상태) -->
-                <svg id="eyeIconHide" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <svg id="eyeIconHide" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                     <line x1="1" y1="1" x2="23" y2="23"></line>
                 </svg>
@@ -788,6 +788,10 @@
 <script>
     let currentOrderCount = 0;
     const MATERIAL_KEYS = ['acrylic', 'pc', 'foamex', 'pcroll'];
+
+    // SHA-256 해시 인증용 솔트 및 해시값
+    const ADMIN_SALT = "bluemoon_express_2026_";
+    const ADMIN_PW_HASH = "bc06d858fc7bfb80de6adb209d32df7615edc51ad067c506349b30a4e5b3f70c";
 
     // 기본 단가 설정
     const DEFAULT_PRICES = {
@@ -1018,6 +1022,14 @@
     }
 
     /* ================= 관리자 기능 ================= */
+    async function sha256Hex(text) {
+        const data = new TextEncoder().encode(text);
+        const buf = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(buf))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+    }
+
     function syncToggleLabel(key) {
         const cb = document.getElementById('enable_' + key);
         const wrap = document.getElementById('toggle_wrap_' + key);
@@ -1096,17 +1108,29 @@
         }
     }
 
-    function submitAdminLogin() {
+    async function submitAdminLogin() {
         const pwInput = document.getElementById('adminPwInput');
         const errEl = document.getElementById('pwModalError');
+        const inputPw = pwInput.value;
 
-        if (pwInput.value === '09072$$') {
+        if (!inputPw) {
+            errEl.innerText = '⚠️ 비밀번호를 입력하세요.';
+            errEl.style.display = 'block';
+            pwInput.focus();
+            return;
+        }
+
+        const inputHash = await sha256Hex(ADMIN_SALT + inputPw);
+
+        if (inputHash === ADMIN_PW_HASH) {
+            errEl.style.display = 'none';
             closePwModal();
             const panel = document.getElementById('adminPanel');
             updateAdminDisplay();
             panel.style.display = 'block';
             panel.scrollIntoView({ behavior: 'smooth' });
         } else {
+            errEl.innerText = '⚠️ 비밀번호가 일치하지 않습니다.';
             errEl.style.display = 'block';
             pwInput.select();
         }
